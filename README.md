@@ -1,60 +1,70 @@
+<div align="center">
+
+<img src="assets/logo.png" alt="zJu4nn Hub" width="160" />
+
 # zJu4nn Hub
 
-> App desktop tipo Hydra Launcher pra fãs do canal **[zJu4nn](https://www.youtube.com/@zJu4nn)** — catálogo de jogos, biblioteca pessoal, conquistas, amigos e tudo mais. ✨
+**Launcher de jogos pra fãs do canal [zJu4nn](https://www.youtube.com/@zJu4nn)** — catálogo, biblioteca, conquistas e amigos, tudo num só lugar. ✨
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
-![Electron](https://img.shields.io/badge/Electron-32-47848F?logo=electron)
-![Platform](https://img.shields.io/badge/platform-Windows-0078d4)
+[![Última versão](https://img.shields.io/github/v/release/zJu4nn-Hub/zjuannhub?style=for-the-badge&color=ff3d9a&labelColor=14091e)](https://github.com/zJu4nn-Hub/zjuannhub/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/zJu4nn-Hub/zjuannhub/total?style=for-the-badge&color=a04bff&labelColor=14091e)](https://github.com/zJu4nn-Hub/zjuannhub/releases)
+[![License: GPL v3](https://img.shields.io/badge/license-GPL_3.0-2bd6e6?style=for-the-badge&labelColor=14091e)](LICENSE)
+[![Platform](https://img.shields.io/badge/Windows-10_+-0078d4?style=for-the-badge&logo=windows&labelColor=14091e)](https://github.com/zJu4nn-Hub/zjuannhub/releases/latest)
+
+[**📥 Baixar última versão**](https://github.com/zJu4nn-Hub/zjuannhub/releases/latest) · [Reportar bug](https://github.com/zJu4nn-Hub/zjuannhub/issues) · [Sugerir feature](https://github.com/zJu4nn-Hub/zjuannhub/issues)
+
+</div>
 
 ---
 
 ## ✨ Features
 
-- 🎮 **Catálogo** com curadoria de jogos
-- 📚 **Biblioteca** com tracking de tempo de jogo, último acesso e tamanho em disco
-- 🌊 **Downloads in-app** via WebTorrent + HTTP (Pixeldrain etc)
-- 📦 **Auto-extração** de `.zip`/`.rar`/`.7z` quando o download conclui
-- 🎯 **Detect automático do `.exe`** após extração
-- 🏆 **Sistema de Conquistas** (achievements) com 11+ formatos suportados (Goldberg, CODEX, OnlineFix, EMPRESS, RLD!, SKIDROW, …)
-- 🔔 **Notificação flutuante** quando desbloqueia conquista (overlay sobre jogos fullscreen)
-- 👥 **Sistema de Amigos** com busca por @handle/Discord ID + comparação de conquistas em tempo real
+- 🎮 **Catálogo curado** com ~2.000 jogos
+- 📚 **Biblioteca pessoal** com tracking de tempo de jogo, último acesso e tamanho em disco
+- 🌊 **Downloads in-app** via WebTorrent + HTTP (Pixeldrain etc.)
+- 📦 **Auto-extração** de `.zip` / `.rar` / `.7z` quando o download conclui
+- 🎯 **Detect automático do `.exe`** após extração ou pasta da Steam
+- 🏆 **Sistema de Conquistas** com 11+ formatos suportados (Goldberg, CODEX, OnlineFix, EMPRESS, RLD!, SKIDROW, …)
+- 🔔 **Notificação flutuante** que aparece sobre jogos fullscreen quando uma conquista desbloqueia
+- 👥 **Sistema de Amigos** com busca por @handle ou Discord ID, comparação de conquistas em tempo real
 - 🔒 **Privacy toggle** — perfil público ou só pra amigos
-- 🔑 **Login via Discord OAuth** (Supabase)
-- ⚙️ **Auto-update** via GitHub Releases
+- 🔑 **Login Discord** via OAuth (Supabase)
+- ⚙️ **Auto-update** via GitHub Releases — instala atualizações sozinho
 
 ---
 
-## 🚀 Download (usuário final)
+## 📥 Download
 
-Pega a última versão na aba **[Releases](../../releases)**. Baixa o `.exe` do instalador, executa e segue o assistente. O app se atualiza sozinho a cada nova versão.
+Pega a última versão na aba [**Releases**](https://github.com/zJu4nn-Hub/zjuannhub/releases/latest) e baixa o instalador. O app se atualiza sozinho a cada nova versão.
 
 ---
 
-## 🛠️ Build / Dev local
+## 🛠️ Build from source
 
 ### Pré-requisitos
 
 - **Node.js 20+**
-- **Windows 10+** (única plataforma suportada por enquanto)
+- **Python 3.11** (3.12+ removeu `distutils` que algumas deps nativas ainda usam)
+- **Windows 10+**
 
 ### Setup
 
 ```bash
-git clone https://github.com/USERNAME/zjuannhub.git
+git clone https://github.com/zJu4nn-Hub/zjuannhub.git
 cd zjuannhub
 npm install
 ```
 
-### Configuração de fontes (obrigatório pra Steam Tools)
+### Configuração de fontes (opcional)
 
-O app baixa Lua/manifest de fontes externas configuráveis. Copie o exemplo e preencha com suas próprias fontes:
+A feature de **adicionar jogos via Steam Tools** lê endpoints dum arquivo de configuração local. Pra habilitar:
 
 ```bash
 cp electron/sources-config.example.json electron/sources-config.json
-# edite com seus endpoints
+# edite com suas próprias fontes
 ```
 
-Sem esse arquivo configurado, a aba "Adicionar à Steam" fica desabilitada. As demais features (Catálogo, Downloads, Biblioteca, Conquistas, Amigos) funcionam normalmente.
+Sem esse arquivo, todas as outras features (catálogo, downloads, biblioteca, conquistas, amigos) funcionam normalmente.
 
 ### Rodar em dev
 
@@ -62,18 +72,10 @@ Sem esse arquivo configurado, a aba "Adicionar à Steam" fica desabilitada. As d
 npm run dev
 ```
 
-### Build de produção
+### Buildar instalador
 
 ```bash
-npm run build
-```
-
-Gera o instalador NSIS em `dist/`.
-
-### Release publicada (requer GH_TOKEN)
-
-```bash
-$env:GH_TOKEN = "seu_token_github"  # PowerShell
+$env:GH_TOKEN = "seu_token_github"   # PowerShell — só pra publish
 npm run release
 ```
 
@@ -81,29 +83,20 @@ Ou simplesmente faça `git tag v0.1.X && git push --tags` — o GitHub Actions b
 
 ---
 
-## 📁 Estrutura
-
-```
-zjuannhub/
-├── electron/        ← main process (Node)
-├── renderer/        ← UI (HTML/CSS/JS vanilla)
-├── assets/          ← icon, tray
-├── scripts/         ← utilitários de build
-└── electron-builder.yml
-```
-
----
-
 ## 🤝 Contribuindo
 
-Feedback, bug reports e PRs são bem-vindos! Abra uma [issue](../../issues) descrevendo o problema ou sugestão.
+Feedback, bug reports e PRs são bem-vindos! Abra uma [issue](https://github.com/zJu4nn-Hub/zjuannhub/issues) descrevendo o problema ou sugestão.
 
 ---
 
 ## 📄 Licença
 
-[GPL-3.0](LICENSE) — qualquer fork público também precisa ser GPL.
+Distribuído sob a licença [GPL-3.0](LICENSE) — qualquer fork público também precisa ser GPL.
 
 ---
 
-> Feito com 💜 pela comunidade do canal **zJu4nn**.
+<div align="center">
+
+Feito com 💜 pela comunidade do canal **[zJu4nn](https://www.youtube.com/@zJu4nn)**
+
+</div>
