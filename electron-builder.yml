@@ -1,0 +1,46 @@
+appId: gg.zju4nn.hub
+productName: zJu4nn Hub
+copyright: Copyright © 2026 zJu4nn
+
+directories:
+  output: dist
+  buildResources: assets
+
+files:
+  - electron/**/*
+  - renderer/**/*
+  - assets/icon.ico
+  - "assets/tray.png"
+  - package.json
+  - "!**/.DS_Store"
+  - "!**/Thumbs.db"
+  - "!electron/sources-config.example.json"
+
+asar: true
+
+publish:
+  provider: github
+  owner: zJu4nn-Hub
+  repo: zjuannhub
+  releaseType: release
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: assets/icon.ico
+  artifactName: "zJu4nn Hub Setup ${version}.${ext}"
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  installerIcon: assets/icon.ico
+  uninstallerIcon: assets/icon.ico
+  installerHeaderIcon: assets/icon.ico
+  createDesktopShortcut: always
+  createStartMenuShortcut: true
+  shortcutName: zJu4nn Hub
+  uninstallDisplayName: zJu4nn Hub
+  deleteAppDataOnUninstall: false

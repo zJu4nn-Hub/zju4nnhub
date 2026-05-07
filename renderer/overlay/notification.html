@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' https: data:; style-src 'self' 'unsafe-inline'; script-src 'self';">
+<title>zJu4nn Hub Notification</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    color: #f5edff;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-app-region: no-drag;
+  }
+  #stack {
+    position: fixed;
+    top: 18px; right: 18px;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .toast {
+    position: relative;
+    display: flex; align-items: center; gap: 12px;
+    min-width: 320px; max-width: 380px;
+    padding: 12px 14px;
+    background: linear-gradient(135deg, #1c0e2d 0%, #14091e 100%);
+    border: 1px solid rgba(255, 200, 60, 0.55);
+    border-radius: 12px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6),
+                0 0 0 1px rgba(255, 200, 60, 0.15) inset,
+                0 0 30px rgba(255, 200, 60, 0.18);
+    transform: translateX(420px);
+    opacity: 0;
+    transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2),
+                opacity 0.3s ease;
+    overflow: hidden;
+  }
+  .toast.show { transform: translateX(0); opacity: 1; }
+  .toast.hide { transform: translateX(420px); opacity: 0; }
+  .toast::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(circle at top right, rgba(255, 200, 60, 0.28), transparent 60%);
+    pointer-events: none;
+  }
+  .icon-wrap {
+    position: relative;
+    flex-shrink: 0;
+    width: 56px; height: 56px;
+    border-radius: 10px; overflow: hidden;
+    background: rgba(255, 200, 60, 0.14);
+    border: 1px solid rgba(255, 200, 60, 0.4);
+  }
+  .icon-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .icon-wrap.empty {
+    display: grid; place-items: center; font-size: 26px;
+  }
+  .body { position: relative; flex: 1; min-width: 0; }
+  .label {
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1px; text-transform: uppercase;
+    color: #ffd24a;
+    margin-bottom: 2px;
+  }
+  .name {
+    font-size: 14px; font-weight: 700;
+    color: #f5edff;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .desc {
+    font-size: 11px;
+    color: rgba(245, 237, 255, 0.7);
+    margin-top: 3px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .progress {
+    font-size: 10px; font-weight: 600;
+    color: rgba(255, 200, 60, 0.9);
+    margin-top: 4px;
+  }
+</style>
+</head>
+<body>
+<div id="stack"></div>
+<script src="notification.js"></script>
+</body>
+</html>

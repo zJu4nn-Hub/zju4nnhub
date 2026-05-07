@@ -1,0 +1,1333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <title>zJu4nn Hub</title>
+
+  <!-- CSP: bloqueia injeção de scripts externos. Permite Google Fonts (CSS) e imagens https (covers Steam) -->
+  <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self';
+    script-src 'self';
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+    font-src 'self' https://fonts.gstatic.com;
+    img-src 'self' data: https:;
+    media-src 'self' https:;
+    connect-src 'self' https:;
+  " />
+
+  <link rel="icon" type="image/png" href="assets/sticker.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Orbitron:wght@600;800&display=swap" rel="stylesheet" />
+
+  <!-- Estilos base do site (sincronizado) -->
+  <link rel="stylesheet" href="lib/site-base.css" />
+  <!-- Overrides app-only (titlebar, sidebar, layout SPA) -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="app-shell auth-pending">
+
+  <!-- ============== AUTH GATE (Fase 8: tela de login antes de tudo) ============== -->
+  <div id="auth-gate" class="auth-gate">
+    <div class="auth-gate-bg"></div>
+
+    <!-- Estado inicial: verificando sessão salva -->
+    <div class="auth-gate-content auth-gate-checking" id="auth-gate-checking">
+      <img src="assets/sticker.png" alt="" class="auth-gate-logo" />
+      <h1>zJu4nn Hub</h1>
+      <div class="auth-gate-spinner"></div>
+      <p>Verificando sua sessão…</p>
+    </div>
+
+    <!-- Estado: precisa logar -->
+    <div class="auth-gate-content auth-gate-login" id="auth-gate-login" hidden>
+      <img src="assets/sticker.png" alt="" class="auth-gate-logo" />
+      <h1>Bem-vindo ao <span class="grad-text">zJu4nn Hub</span></h1>
+      <p class="auth-gate-tagline">
+        Entre com Discord pra abrir o app, sincronizar sua biblioteca e muito mais.
+      </p>
+      <button class="perfil-discord-btn auth-gate-btn" id="auth-gate-login-btn">
+        <span class="discord-logo">💜</span>
+        <span>Continuar com Discord</span>
+      </button>
+      <p class="auth-gate-note">A gente abre seu navegador padrão pra você confirmar com segurança.</p>
+    </div>
+
+    <!-- Estado: aguardando OAuth no navegador -->
+    <div class="auth-gate-content auth-gate-waiting" id="auth-gate-waiting" hidden>
+      <img src="assets/sticker.png" alt="" class="auth-gate-logo" />
+      <h1>Aguardando login…</h1>
+      <div class="auth-gate-spinner"></div>
+      <p>Abrimos uma aba no seu navegador. Termina o login lá com o Discord — quando terminar, você volta automaticamente pra cá.</p>
+      <button class="auth-gate-cancel" id="auth-gate-cancel">Cancelar</button>
+    </div>
+
+    <!-- Estado: erro -->
+    <div class="auth-gate-content auth-gate-error" id="auth-gate-error" hidden>
+      <div class="auth-gate-error-icon">❌</div>
+      <h1>Erro no login</h1>
+      <p class="auth-gate-error-msg" id="auth-gate-error-msg">—</p>
+      <button class="perfil-discord-btn auth-gate-btn" id="auth-gate-retry-btn">
+        Tentar novamente
+      </button>
+    </div>
+  </div>
+
+  <!-- ============== BOOT LOADER (Fase 9: pre-carrega dados na 1ª abertura) ============== -->
+  <div id="boot-loader" class="boot-loader" hidden>
+    <div class="boot-loader-bg"></div>
+    <div class="boot-loader-content">
+      <img src="assets/sticker.png" alt="" class="boot-loader-logo" />
+      <h1 class="boot-loader-title">zJu4nn <span class="grad-text">Hub</span></h1>
+      <div class="boot-loader-bar-wrap">
+        <div class="boot-loader-bar" id="boot-loader-bar"></div>
+      </div>
+      <p class="boot-loader-msg" id="boot-loader-msg">Preparando sua biblioteca…</p>
+    </div>
+  </div>
+
+  <!-- ============== CUSTOM TITLEBAR (drag region) ============== -->
+  <div class="titlebar">
+    <div class="titlebar-drag">
+      <img src="assets/sticker.png" class="titlebar-icon" alt="" />
+      <span class="titlebar-title">zJu4nn Hub</span>
+      <span class="titlebar-version" id="titlebar-version"></span>
+    </div>
+    <div class="titlebar-actions">
+      <button class="titlebar-btn" id="tb-min" aria-label="Minimizar" title="Minimizar">
+        <svg width="12" height="12" viewBox="0 0 12 12"><line x1="2" y1="6" x2="10" y2="6" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+      <button class="titlebar-btn" id="tb-max" aria-label="Maximizar" title="Maximizar">
+        <svg width="12" height="12" viewBox="0 0 12 12"><rect x="2.5" y="2.5" width="7" height="7" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+      <button class="titlebar-btn titlebar-btn-close" id="tb-close" aria-label="Fechar" title="Fechar">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M2 2 L10 10 M10 2 L2 10" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- ============== APP LAYOUT (sidebar + main) ============== -->
+  <div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <a href="#inicio" class="sidebar-brand">
+        <span class="brand-text">zJu4nn</span><span class="brand-hub">HUB</span>
+      </a>
+
+      <nav class="sidebar-nav">
+        <button class="sidebar-link" data-view="inicio">
+          <span class="sidebar-icon">🏠</span><span>Início</span>
+        </button>
+        <button class="sidebar-link active" data-view="catalogo">
+          <span class="sidebar-icon">🎮</span><span>Catálogo</span>
+        </button>
+        <button class="sidebar-link" data-view="buscar">
+          <span class="sidebar-icon">🔎</span><span>Buscar Jogos</span>
+          <span class="sidebar-soon" style="background: rgba(43, 214, 230, 0.18); color: var(--cyan);">novo</span>
+        </button>
+        <button class="sidebar-link" data-view="hypervisor">
+          <span class="sidebar-icon">🛡️</span><span>Hypervisor</span>
+        </button>
+        <button class="sidebar-link" data-view="biblioteca">
+          <span class="sidebar-icon">📚</span><span>Biblioteca</span>
+        </button>
+        <button class="sidebar-link" data-view="downloads">
+          <span class="sidebar-icon">⬇️</span><span>Downloads</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="sidebar-link" data-view="ajustes">
+          <span class="sidebar-icon">⚙️</span><span>Ajustes</span>
+        </button>
+        <button class="sidebar-link" data-view="perfil" id="sidebar-perfil-btn">
+          <span class="sidebar-icon" id="sidebar-perfil-icon">👤</span>
+          <span id="sidebar-perfil-label">Perfil</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="app-main">
+
+      <!-- Background ornamental -->
+      <div class="bg-blob bg-blob-1"></div>
+      <div class="bg-blob bg-blob-2"></div>
+      <div class="bg-grid"></div>
+
+      <!-- ============== VIEW: INÍCIO ============== -->
+      <section id="view-inicio" class="app-view" hidden>
+        <div class="hero hero-compact">
+          <div class="hero-content">
+            <span class="badge"><span class="dot"></span> Bem-vindo ao Hub do zJu4nn</span>
+            <h1 class="hero-title">
+              Seu cantinho <span class="grad-text">cor-de-rosa</span><br />
+              de jogos e correções
+            </h1>
+            <div class="hero-actions">
+              <button class="btn btn-primary" data-goto="catalogo">Ver Jogos Verdes</button>
+              <button class="btn btn-ghost" data-goto="hypervisor">Correções Hypervisor</button>
+            </div>
+            <div class="hero-stats">
+              <div><strong id="stat-hyper">—</strong><span>Hypervisor</span></div>
+              <div><strong id="stat-green">—</strong><span>Verdes</span></div>
+              <div><strong>100%</strong><span>Gratuito</span></div>
+              <div><strong>BR</strong><span>Sul</span></div>
+            </div>
+          </div>
+          <div class="hero-mascot">
+            <img src="assets/sueter.png" alt="" aria-hidden="true" class="mascot-img mascot-side mascot-side-left" />
+            <img src="assets/lingerie.png" alt="" aria-hidden="true" class="mascot-img mascot-side mascot-side-right" />
+            <img src="assets/COELHA.png" alt="Nino Nakano — mascote do canal zJu4nn" class="mascot-img mascot-main" />
+            <div class="mascot-glow"></div>
+          </div>
+        </div>
+
+        <!-- Seção: Downloads ativos -->
+        <div class="home-section" id="home-downloads-section" hidden>
+          <div class="home-section-head">
+            <h3 class="home-section-title">⬇️ Downloads em andamento</h3>
+            <button class="home-section-link" data-goto="downloads">Ver todos →</button>
+          </div>
+          <div class="home-downloads-list" id="home-downloads-list"></div>
+        </div>
+
+        <!-- Seção: Descobrir (com tabs Populares / Recém-adicionados) -->
+        <div class="home-section" id="home-discover-section" hidden>
+          <div class="home-tabs">
+            <button class="home-tab active" data-tab="popular">🔥 Populares na Steam BR</button>
+            <button class="home-tab" data-tab="recent">✨ Recém-adicionados</button>
+            <button class="home-section-link home-tabs-aside" data-goto="catalogo">Ver catálogo →</button>
+          </div>
+          <div class="home-carousel" id="home-discover-grid"></div>
+        </div>
+      </section>
+
+      <!-- ============== VIEW: CATÁLOGO (Jogos Verdes) ============== -->
+      <section id="view-catalogo" class="app-view section">
+        <!-- Anchor pro engine do site (scrollIntoView na paginação) -->
+        <div id="jogos-verdes" class="anchor-stub"></div>
+        <div class="section-header">
+          <h2 class="section-title"><span class="grad-text">Jogos Verdes</span></h2>
+          <p class="section-sub">
+            Catálogo completo de jogos para PC. Use a busca, filtros e páginas pra navegar entre os títulos.
+          </p>
+        </div>
+
+        <div class="catalog-toolbar">
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="green-search" class="search-input"
+                   placeholder="Buscar jogo... (ex: Cyberpunk, GTA, Elden Ring)" />
+            <button class="search-clear" id="green-search-clear" aria-label="Limpar busca">×</button>
+          </div>
+          <div class="filter-info">
+            <span id="green-count">— jogos</span>
+          </div>
+        </div>
+
+        <div class="filter-chips" id="green-filters"></div>
+
+        <div id="green-grid" class="grid">
+          <div class="empty-state" id="green-loading">
+            <div class="empty-icon">⏳</div>
+            <h3>Carregando catálogo...</h3>
+            <p>Aguarde um momento.</p>
+          </div>
+        </div>
+
+        <div class="pagination" id="green-pagination"></div>
+      </section>
+
+      <!-- ============== VIEW: BUSCAR JOGOS (Steam Store) ============== -->
+      <section id="view-buscar" class="app-view section" hidden>
+        <div class="section-header">
+          <h2 class="section-title"><span class="grad-text">Buscar Jogos</span></h2>
+          <p class="section-sub">
+            Busca direto na Steam. Adiciona o jogo na tua biblioteca via Steam Tools (CDN da Steam, achievements, cloud save funcionando).
+          </p>
+        </div>
+
+        <div class="catalog-toolbar">
+          <div class="search-wrap">
+            <span class="search-icon">🔎</span>
+            <input type="text" id="steam-search-input" class="search-input"
+                   placeholder="Busca na Steam... (ex: Cyberpunk, Schedule I, Elden Ring)" />
+            <button class="search-clear" id="steam-search-clear" aria-label="Limpar">×</button>
+          </div>
+          <div class="filter-info">
+            <span id="steam-search-count">Digite pra buscar</span>
+          </div>
+        </div>
+
+        <div id="steam-search-results" class="grid">
+          <div class="empty-state" id="steam-search-empty">
+            <div class="empty-icon">🔍</div>
+            <h3>Comece digitando</h3>
+            <p>Os resultados aparecem em tempo real conforme você digita.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== VIEW: HYPERVISOR ============== -->
+      <section id="view-hypervisor" class="app-view section" hidden>
+        <div class="section-header">
+          <h2 class="section-title"><span class="grad-text">Correções Hypervisor</span></h2>
+          <p class="section-sub">
+            Lista completa de jogos com suporte ao bypass Hypervisor. Clique em um jogo para ver o tutorial passo a passo e baixar a correção.
+          </p>
+        </div>
+        <div id="hyper-grid" class="grid"></div>
+      </section>
+
+      <!-- ============== VIEW: BIBLIOTECA (Fase 7) ============== -->
+      <section id="view-biblioteca" class="app-view section" hidden>
+        <div class="section-header">
+          <h2 class="section-title"><span class="grad-text">Biblioteca</span></h2>
+          <p class="section-sub">Seus jogos adicionados via Steam Tools e baixados pelo app.</p>
+        </div>
+
+        <div class="home-tabs lib-tabs">
+          <button class="home-tab active" data-lib-tab="steamtools">🟢 Steam Tools <span class="lib-tab-count" data-count="steamtools">0</span></button>
+          <button class="home-tab" data-lib-tab="downloads">🌊 Baixados <span class="lib-tab-count" data-count="downloads">0</span></button>
+        </div>
+
+        <div class="lib-toolbar">
+          <div class="lib-toolbar-left">
+            <label class="lib-sort">
+              <span>Ordenar por</span>
+              <select id="lib-sort-select">
+                <option value="title-asc">Título (A-Z)</option>
+                <option value="title-desc">Título (Z-A)</option>
+                <option value="recent">Jogados recentemente</option>
+                <option value="most-played">Mais jogados</option>
+                <option value="installed">Instalados primeiro</option>
+              </select>
+            </label>
+            <button class="lib-fav-toggle" id="lib-fav-toggle" type="button" title="Mostrar só favoritos">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+              <span>Favoritos</span>
+              <span class="lib-fav-count" id="lib-fav-count">0</span>
+            </button>
+          </div>
+          <div class="lib-toolbar-right">
+            <button class="lib-view-btn active" data-view="cover" type="button" title="Capas grandes">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+            </button>
+            <button class="lib-view-btn" data-view="compact" type="button" title="Grade compacta">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            </button>
+            <button class="lib-view-btn" data-view="list" type="button" title="Lista">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div id="lib-grid-steamtools" class="home-carousel lib-grid lib-view-cover"></div>
+
+        <div id="lib-grid-downloads" class="home-carousel lib-grid lib-view-cover" hidden></div>
+
+        <div id="lib-empty-steamtools" class="downloads-empty lib-empty" hidden>
+          <div class="empty-icon">🟢</div>
+          <h3>Nenhum jogo no Steam Tools ainda</h3>
+          <p>Vá no <button class="link-btn" data-goto="buscar">Buscar Jogos</button>, clique num jogo e use "Adicionar à Steam".</p>
+        </div>
+
+        <div id="lib-empty-downloads" class="downloads-empty lib-empty" hidden>
+          <div class="empty-icon">🌊</div>
+          <h3>Nenhum jogo baixado ainda</h3>
+          <p>Vá no <button class="link-btn" data-goto="catalogo">Catálogo</button> e baixe um jogo dentro do app.</p>
+        </div>
+
+        <div id="lib-no-steam" class="downloads-empty lib-empty" hidden>
+          <div class="empty-icon">⚙️</div>
+          <h3>Steam não detectada</h3>
+          <p>Configure o caminho da Steam em <button class="link-btn" data-goto="ajustes">Ajustes → Geral</button>.</p>
+        </div>
+      </section>
+
+      <!-- ============== VIEW: DOWNLOADS ============== -->
+      <section id="view-downloads" class="app-view section" hidden>
+        <div class="section-header">
+          <h2 class="section-title"><span class="grad-text">Downloads</span></h2>
+          <p class="section-sub">
+            Seus torrents ativos e concluídos. O download continua mesmo se você trocar de aba — só não pode fechar o app.
+          </p>
+        </div>
+
+        <div id="downloads-list" class="downloads-list">
+          <div class="downloads-empty" id="downloads-empty">
+            <div class="empty-icon">⬇️</div>
+            <h3>Nenhum download ainda</h3>
+            <p>Vá no <button class="link-btn" data-goto="catalogo">Catálogo</button>, clique num jogo com link torrent e escolha "Baixar dentro do app".</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== VIEW: AJUSTES ============== -->
+      <section id="view-ajustes" class="app-view section" hidden>
+        <div class="section-header">
+          <h2 class="section-title"><span class="grad-text">Ajustes</span></h2>
+          <p class="section-sub">Configurações do app, fontes de jogos e infos.</p>
+        </div>
+
+        <div class="settings-tabs">
+          <button class="settings-tab active" data-tab="geral">Geral</button>
+          <button class="settings-tab" data-tab="sobre">Sobre</button>
+        </div>
+
+        <!-- ===== GERAL ===== -->
+        <div class="settings-panel" data-panel="geral">
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <strong>Diretório de download padrão</strong>
+              <span>Toda nova janela de download começa com essa pasta. Você pode mudar na hora.</span>
+            </div>
+            <div class="settings-row-control">
+              <input type="text" id="settings-default-dir" class="dl-settings-input" />
+              <button class="dl-settings-explore" id="settings-default-dir-pick">Explorar</button>
+            </div>
+          </div>
+
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <strong>Pasta da Steam</strong>
+              <span id="settings-steam-status">Detectando…</span>
+            </div>
+            <div class="settings-row-control">
+              <input type="text" id="settings-steam-path" class="dl-settings-input" placeholder="C:\Program Files (x86)\Steam" />
+              <button class="dl-settings-explore" id="settings-steam-path-pick">Explorar</button>
+            </div>
+          </div>
+
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <strong>Extrair automaticamente arquivos baixados</strong>
+              <span>Detecta .zip, .rar e .7z e extrai pra mesma pasta após o download terminar. Pra .rar/.7z é necessário ter o 7-Zip instalado.</span>
+            </div>
+            <div class="settings-row-control">
+              <label class="settings-toggle">
+                <input type="checkbox" id="settings-auto-extract" />
+                <span class="settings-toggle-track"><span class="settings-toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-row settings-row-sub" id="settings-row-delete-archive">
+            <div class="settings-row-info">
+              <strong>Apagar arquivo original após extrair</strong>
+              <span>Libera espaço em disco — só apaga se a extração der certo.</span>
+            </div>
+            <div class="settings-row-control">
+              <label class="settings-toggle">
+                <input type="checkbox" id="settings-delete-archive" />
+                <span class="settings-toggle-track"><span class="settings-toggle-thumb"></span></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="settings-row">
+            <div class="settings-row-info">
+              <strong>Versão do app</strong>
+              <span>Você está usando a última versão.</span>
+            </div>
+            <div class="settings-row-control">
+              <span class="settings-version" id="settings-app-version">—</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== FONTES ===== -->
+        <div class="settings-panel" data-panel="fontes" hidden>
+          <div class="sources-toolbar">
+            <p class="sources-intro">
+              Adicione fontes de jogos compatíveis com o formato Hydra/Kazumi.
+              Os jogos das fontes habilitadas aparecem no catálogo junto com os jogos oficiais.
+            </p>
+            <div class="sources-actions">
+              <button class="btn btn-ghost" id="sources-sync-all">🔄 Sincronizar todas</button>
+              <button class="btn btn-ghost" id="sources-import-btn">📂 Importar arquivo</button>
+              <button class="btn btn-primary" id="sources-add-btn">+ Adicionar fonte</button>
+            </div>
+          </div>
+
+          <div class="sources-list" id="sources-list">
+            <!-- Card oficial fixo -->
+            <div class="source-card source-card-official">
+              <div class="source-card-head">
+                <span class="source-name">🟢 zJu4nn Hub <span class="source-tag">oficial</span></span>
+                <span class="source-status-pill source-active">Sempre ativa</span>
+              </div>
+              <p class="source-stats" id="source-official-count">— jogos verdes</p>
+              <p class="source-url">Fonte interna do app</p>
+            </div>
+            <!-- Cards das fontes externas inseridos via JS -->
+          </div>
+        </div>
+
+        <!-- ===== SOBRE ===== -->
+        <div class="settings-panel" data-panel="sobre" hidden>
+          <div class="about-card">
+            <img src="assets/sticker.png" class="about-icon" alt="" />
+            <h3>zJu4nn Hub</h3>
+            <p>Hub do canal zJu4nn — feito com carinho pra você baixar e jogar mais fácil. ✨</p>
+            <p class="about-version" id="about-app-version">v—</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============== VIEW: PERFIL (Fase 8 redesign Hydra-style) ============== -->
+      <section id="view-perfil" class="app-view section perfil-view" hidden>
+
+        <!-- Estado: deslogado (fallback caso o gate não cubra) -->
+        <div id="perfil-logged-out" class="perfil-loggedout" hidden>
+          <div class="perfil-login-icon">🎮</div>
+          <h3>Entre com Discord</h3>
+          <p>Conecta sua conta pra ter biblioteca sincronizada, badges, estatísticas e o que vier de novidade.</p>
+          <button class="perfil-discord-btn" id="perfil-discord-btn">
+            <span class="discord-logo">💜</span>
+            <span>Continuar com Discord</span>
+          </button>
+        </div>
+
+        <!-- Estado: loading -->
+        <div id="perfil-loading" class="perfil-loading" hidden>
+          <div class="perfil-spinner"></div>
+          <p>Aguardando…</p>
+        </div>
+
+        <!-- Estado: logado (Hydra-style) -->
+        <div id="perfil-dashboard" class="perfil-hero" hidden>
+          <div class="perfil-banner" id="perfil-banner">
+            <div class="perfil-banner-overlay"></div>
+          </div>
+
+          <div class="perfil-hero-bottom">
+            <div class="perfil-hero-info">
+              <img id="perfil-avatar" class="perfil-avatar-big" alt="Avatar" />
+              <div class="perfil-hero-text">
+                <div class="perfil-username-row">
+                  <span class="perfil-username-big" id="perfil-username">—</span>
+                  <button class="perfil-icon-btn" id="perfil-copy-id" title="Copiar Discord ID">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  </button>
+                </div>
+                <div class="perfil-hero-meta">
+                  <span class="perfil-tier" id="perfil-tier">Gratuito</span>
+                  <span class="perfil-since" id="perfil-since"></span>
+                </div>
+              </div>
+            </div>
+
+            <div class="perfil-hero-actions">
+              <button class="perfil-action-btn perfil-edit-btn" id="perfil-edit-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                <span>Editar perfil</span>
+              </button>
+              <button class="perfil-action-btn perfil-logout-btn" id="perfil-logout-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                <span>Sair da conta</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal: Editar perfil -->
+        <div id="perfil-edit-modal" class="zhub-modal-overlay" hidden>
+          <div class="zhub-modal perfil-edit-modal-box">
+            <button class="zhub-modal-close" id="perfil-edit-close">×</button>
+            <h3>Editar perfil</h3>
+
+            <div class="perfil-edit-banner-wrap">
+              <div class="perfil-edit-banner" id="perfil-edit-banner-preview">
+                <div class="perfil-edit-avatar-overlay">
+                  <img class="perfil-edit-avatar-preview" id="perfil-edit-avatar-preview" alt="" />
+                  <button class="perfil-edit-img-btn perfil-edit-avatar-btn" id="perfil-edit-avatar-btn" type="button">
+                    📷
+                  </button>
+                </div>
+              </div>
+              <button class="perfil-edit-img-btn" id="perfil-edit-banner-btn" type="button">
+                📷 Trocar banner
+              </button>
+            </div>
+
+            <div class="perfil-edit-fields-stacked">
+              <label>
+                <span>Nome de exibição</span>
+                <input type="text" id="perfil-edit-username" maxlength="60" placeholder="Seu nome" />
+              </label>
+              <label>
+                <span>@ Handle público <em class="perfil-edit-optional">(opcional)</em> <small id="perfil-edit-handle-status"></small></span>
+                <input type="text" id="perfil-edit-handle" maxlength="20" placeholder="ex: zju4nn — letras/números/underscore" />
+                <small class="perfil-edit-help">Apelido único pra busca rápida. Sem definir, amigos podem te achar pelo nome ou Discord ID.</small>
+              </label>
+              <label>
+                <span>Bio <em class="perfil-edit-optional">(opcional)</em></span>
+                <textarea id="perfil-edit-bio" maxlength="200" rows="2" placeholder="Sobre você (200 chars)"></textarea>
+              </label>
+              <label class="perfil-edit-toggle-row">
+                <input type="checkbox" id="perfil-edit-private" />
+                <span class="perfil-edit-toggle-info">
+                  <strong>🔒 Perfil privado</strong>
+                  <small>Só amigos veem sua biblioteca, conquistas e atividades.</small>
+                </span>
+              </label>
+            </div>
+
+            <div class="perfil-edit-actions">
+              <button class="perfil-action-btn perfil-edit-cancel" id="perfil-edit-cancel">Cancelar</button>
+              <button class="perfil-action-btn perfil-edit-save" id="perfil-edit-save">Salvar</button>
+            </div>
+
+            <div class="perfil-edit-progress" id="perfil-edit-progress" hidden>
+              <div class="perfil-spinner perfil-spinner-sm"></div>
+              <span id="perfil-edit-progress-text">Salvando…</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal: Adicionar amigo (Fase 10) -->
+        <div id="friends-add-modal" class="zhub-modal-overlay" hidden>
+          <div class="zhub-modal friends-add-modal-box">
+            <button class="zhub-modal-close" id="friends-add-close">×</button>
+            <h3>👥 Amigos</h3>
+
+            <!-- Pedidos pendentes -->
+            <div id="friends-pending-section" class="friends-pending-section" hidden>
+              <h4 class="friends-section-title">Pedidos recebidos <span id="friends-received-count">0</span></h4>
+              <div id="friends-received-list" class="friends-pending-list"></div>
+              <h4 class="friends-section-title" id="friends-sent-title" hidden>Enviados <span id="friends-sent-count">0</span></h4>
+              <div id="friends-sent-list" class="friends-pending-list"></div>
+            </div>
+
+            <!-- Buscar -->
+            <h4 class="friends-section-title">Buscar usuário</h4>
+            <div class="friends-search-row">
+              <input type="text" id="friends-search-input" class="friends-search-input"
+                     placeholder="@handle ou Discord ID" maxlength="40" />
+            </div>
+            <div id="friends-search-results" class="friends-search-results">
+              <div class="friends-search-empty">Digite acima pra buscar (mínimo 2 caracteres).</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal: Perfil de Amigo (Fase 10) -->
+        <div id="friend-profile-modal" class="zhub-modal-overlay" hidden>
+          <div class="zhub-modal friend-profile-modal-box">
+            <button class="zhub-modal-close" id="friend-profile-close">×</button>
+            <div id="friend-profile-content" class="friend-profile-content">
+              <div class="friend-profile-loading">Carregando…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal: Comparar Conquistas (Fase 10) -->
+        <div id="ach-compare-modal" class="zhub-modal-overlay" hidden>
+          <div class="zhub-modal ach-compare-modal-box">
+            <button class="zhub-modal-close" id="ach-compare-close">×</button>
+            <h3 id="ach-compare-title">🏆 Comparar Conquistas</h3>
+            <div id="ach-compare-content" class="ach-compare-content">
+              <div class="friend-profile-loading">Carregando…</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal: Sair da conta -->
+        <div id="perfil-logout-modal" class="zhub-modal-overlay" hidden>
+          <div class="zhub-modal perfil-logout-modal-box">
+            <button class="zhub-modal-close" id="perfil-logout-close">×</button>
+            <div class="perfil-logout-icon">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </div>
+            <h3>Sair da conta?</h3>
+            <p>Você vai voltar pra tela de login. Sua sessão atual será encerrada.</p>
+            <div class="perfil-edit-actions">
+              <button class="perfil-action-btn perfil-edit-cancel" id="perfil-logout-cancel">Cancelar</button>
+              <button class="perfil-action-btn perfil-logout-confirm" id="perfil-logout-confirm">Sair</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conteúdo (2 colunas: main + sidebar Hydra-style) -->
+        <div id="perfil-content" class="perfil-content" hidden>
+          <div class="perfil-content-grid">
+
+            <!-- COLUNA PRINCIPAL: biblioteca -->
+            <div class="perfil-content-main">
+
+              <!-- Toolbar de ordenação (afeta Fixado + Biblioteca) -->
+              <div class="perfil-lib-toolbar" id="perfil-lib-toolbar" hidden>
+                <div class="perfil-sort-group">
+                  <button class="perfil-sort-btn" data-sort="lastPlayed" title="Jogados recentemente">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    Jogado recentemente
+                  </button>
+                  <button class="perfil-sort-btn" data-sort="totalMinutes" title="Mais jogados">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 3"/><circle cx="12" cy="12" r="10"/></svg>
+                    Tempo de jogo
+                  </button>
+                  <button class="perfil-sort-btn" data-sort="addedAt" title="Adicionados recentemente">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    Adicionado recentemente
+                  </button>
+                </div>
+              </div>
+
+              <!-- Seção FIXADO -->
+              <div class="perfil-card-section perfil-section-pinned" id="perfil-pinned-section" hidden>
+                <div class="perfil-section-head">
+                  <h3 class="perfil-section-title">📌 Fixado <span class="perfil-section-count" id="perfil-pinned-count">0</span></h3>
+                </div>
+                <div id="perfil-pinned-grid" class="perfil-lib-grid"></div>
+              </div>
+
+              <!-- Seção BIBLIOTECA -->
+              <div class="perfil-card-section">
+                <div class="perfil-section-head">
+                  <h3 class="perfil-section-title">🎮 Sua biblioteca <span class="perfil-section-count" id="perfil-lib-count">0</span></h3>
+                  <button class="perfil-section-link" data-goto="biblioteca">Ver tudo →</button>
+                </div>
+                <div id="perfil-lib-grid" class="perfil-lib-grid"></div>
+                <div id="perfil-lib-empty" class="perfil-lib-empty" hidden>
+                  Nenhum jogo ainda. Vai no <button class="link-btn" data-goto="buscar">Buscar Jogos</button> e adiciona.
+                </div>
+              </div>
+            </div>
+
+            <!-- COLUNA SIDEBAR: estatísticas estilo Hydra -->
+            <aside class="perfil-content-aside">
+              <div class="perfil-aside-card">
+                <div class="perfil-aside-head">
+                  <h3>📊 Estatísticas</h3>
+                </div>
+                <div class="perfil-aside-list">
+                  <div class="perfil-aside-row">
+                    <div class="perfil-aside-row-label">Tempo total de jogo</div>
+                    <div class="perfil-aside-row-value">
+                      <span class="perfil-aside-icon">⏱</span>
+                      <span id="stat-playtime">0min</span>
+                    </div>
+                  </div>
+                  <div class="perfil-aside-row">
+                    <div class="perfil-aside-row-label">Jogos no Steam Tools</div>
+                    <div class="perfil-aside-row-value">
+                      <span class="perfil-aside-icon">🟢</span>
+                      <span id="stat-steamtools">0</span>
+                    </div>
+                  </div>
+                  <div class="perfil-aside-row">
+                    <div class="perfil-aside-row-label">Downloads concluídos</div>
+                    <div class="perfil-aside-row-value">
+                      <span class="perfil-aside-icon">🌊</span>
+                      <span id="stat-downloads">0</span>
+                    </div>
+                  </div>
+                  <div class="perfil-aside-row">
+                    <div class="perfil-aside-row-label">Sessões ativas</div>
+                    <div class="perfil-aside-row-value">
+                      <span class="perfil-aside-icon">🎮</span>
+                      <span id="stat-active">0</span>
+                    </div>
+                  </div>
+                  <div class="perfil-aside-row">
+                    <div class="perfil-aside-row-label">Conquistas desbloqueadas</div>
+                    <div class="perfil-aside-row-value">
+                      <span class="perfil-aside-icon">🏆</span>
+                      <span id="stat-achievements">0/0</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="perfil-aside-card" id="perfil-activities-card">
+                <div class="perfil-aside-head">
+                  <h3>📜 Atividades recentes</h3>
+                </div>
+                <div id="perfil-activities-list" class="perfil-activities-list">
+                  <div class="perfil-activities-empty">Nenhum jogo aberto ainda.</div>
+                </div>
+              </div>
+
+              <!-- AMIGOS (Fase 10) -->
+              <div class="perfil-aside-card" id="perfil-friends-card">
+                <div class="perfil-aside-head">
+                  <h3>👥 Amigos <span class="perfil-section-count" id="perfil-friends-count">0</span></h3>
+                  <button class="perfil-friend-add-btn" id="perfil-add-friend-btn" title="Adicionar amigo">＋</button>
+                </div>
+                <div id="perfil-friends-pending" class="perfil-friends-pending" hidden>
+                  <button class="perfil-friends-pending-btn" id="perfil-friends-pending-btn">
+                    <span>📨</span>
+                    <span><strong id="perfil-friends-pending-count">0</strong> pedido(s) pendente(s)</span>
+                  </button>
+                </div>
+                <div id="perfil-friends-list" class="perfil-friends-list">
+                  <div class="perfil-friends-empty">Nenhum amigo ainda. Clique em ＋ pra adicionar.</div>
+                </div>
+              </div>
+
+              <div class="perfil-aside-card">
+                <div class="perfil-aside-head">
+                  <h3>✨ Em breve</h3>
+                </div>
+                <ul class="perfil-aside-coming">
+                  <li>☁️ Biblioteca sincronizada na nuvem</li>
+                  <li>🏆 Badges e conquistas raras</li>
+                  <li>💬 Chat com amigos</li>
+                </ul>
+              </div>
+            </aside>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ============== MODALS (reuso do site) ============== -->
+  <div class="modal-overlay" id="modal" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="modal-close" aria-label="Fechar">×</button>
+      <div class="modal-banner">
+        <img id="modal-img" src="" alt="" />
+        <div class="modal-banner-fade"></div>
+      </div>
+      <div class="modal-body">
+        <h3 id="modal-title"></h3>
+        <p id="modal-summary" class="modal-summary"></p>
+        <h4 class="modal-h4">📖 Tutorial — Aplicar Correção Hypervisor</h4>
+        <ol class="tutorial-list" id="modal-tutorial"></ol>
+        <div class="modal-actions" id="modal-actions"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notice-overlay" id="notice" aria-hidden="true">
+    <div class="notice-card" role="dialog" aria-modal="true">
+      <button class="notice-close" id="notice-close" aria-label="Fechar">×</button>
+      <div class="notice-icon">⚠️</div>
+      <h3>Link indisponível</h3>
+      <p class="notice-text">
+        O link de download direto deste jogo está <b>quebrado</b> ou foi removido pelo servidor de hospedagem.
+      </p>
+      <div class="notice-tip">
+        <span class="tip-label">💡 Recomendação</span>
+        <p>Baixe o jogo pelo <b>Steam Tools</b> — método mais seguro, sempre atualizado e direto da Steam. Depois é só aplicar a correção Hypervisor normalmente. 💖</p>
+      </div>
+      <button class="btn btn-primary" id="notice-ok">Entendi!</button>
+    </div>
+  </div>
+
+  <div class="server-picker-overlay" id="server-picker" aria-hidden="true">
+    <div class="server-picker-card" role="dialog" aria-modal="true">
+      <button class="notice-close" id="picker-close" aria-label="Fechar">×</button>
+      <h3>Escolha o servidor</h3>
+      <p class="picker-game-name"></p>
+      <div class="picker-servers"></div>
+    </div>
+  </div>
+
+  <!-- REMOVE PROMPT: aparece quando o user clica no 🗑 do download -->
+  <div class="dl-prompt-overlay" id="dl-remove-prompt" aria-hidden="true">
+    <div class="dl-prompt-card" role="dialog" aria-modal="true">
+      <button class="notice-close" id="dl-remove-close" aria-label="Fechar">×</button>
+      <div class="dl-prompt-icon">🗑</div>
+      <h3>Remover este download?</h3>
+      <p class="dl-prompt-game" id="dl-remove-game"></p>
+
+      <div class="dl-prompt-actions">
+        <button class="dl-option" id="dl-remove-keep">
+          <div class="dl-option-icon">📋</div>
+          <div class="dl-option-text">
+            <strong>Só remover da lista</strong>
+            <span>Os arquivos ficam salvos na pasta. Você pode jogar normal.</span>
+          </div>
+        </button>
+
+        <button class="dl-option dl-option-danger" id="dl-remove-files">
+          <div class="dl-option-icon">💣</div>
+          <div class="dl-option-text">
+            <strong>Remover e apagar arquivos</strong>
+            <span>Apaga TUDO da pasta do jogo. Não dá pra desfazer.</span>
+          </div>
+        </button>
+
+        <button class="dl-option dl-option-ghost" id="dl-remove-cancel">
+          <div class="dl-option-text" style="text-align: center; width: 100%;">
+            <strong>Cancelar</strong>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD TO STEAM PROGRESS MODAL -->
+  <div class="dl-prompt-overlay" id="ats-modal" aria-hidden="true">
+    <div class="dl-prompt-card" role="dialog" aria-modal="true">
+      <button class="notice-close" id="ats-close" aria-label="Fechar" hidden>×</button>
+      <div class="dl-prompt-icon" id="ats-icon">⚙️</div>
+      <h3 id="ats-title">Adicionando à Steam…</h3>
+      <p class="dl-prompt-game" id="ats-game">—</p>
+
+      <div class="ats-status">
+        <div class="ats-step" id="ats-step-msg">Detectando Steam…</div>
+        <div class="ats-progress-wrap" id="ats-progress-wrap" hidden>
+          <div class="ats-progress-bar" id="ats-progress-bar" style="width: 0%"></div>
+        </div>
+        <div class="ats-meta" id="ats-meta"></div>
+      </div>
+
+      <div class="ats-actions" id="ats-actions" hidden>
+        <button class="btn btn-primary" id="ats-restart-steam">▶ Reiniciar Steam agora</button>
+        <button class="btn btn-ghost" id="ats-later">Reinicio depois</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX (visualizador de screenshots) -->
+  <div class="lightbox-overlay" id="lightbox" aria-hidden="true">
+    <button class="lightbox-close" id="lightbox-close" aria-label="Fechar">×</button>
+    <button class="lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Anterior">‹</button>
+    <button class="lightbox-nav lightbox-next" id="lightbox-next" aria-label="Próxima">›</button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="" />
+    <div class="lightbox-counter" id="lightbox-counter"></div>
+  </div>
+
+  <!-- STEAM GAME DETAILS MODAL -->
+  <div class="steam-modal-overlay" id="steam-detail-modal" aria-hidden="true">
+    <div class="steam-modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="steam-detail-close" aria-label="Fechar">×</button>
+
+      <div class="steam-hero">
+        <img class="steam-hero-bg" id="steam-detail-bg" src="" alt="" />
+        <div class="steam-hero-fade"></div>
+        <div class="steam-hero-content">
+          <img class="steam-hero-cover" id="steam-detail-cover" src="" alt="" />
+          <div class="steam-hero-text">
+            <h2 id="steam-detail-name">—</h2>
+            <p class="steam-hero-meta">
+              <span id="steam-detail-developer">—</span>
+              <span class="steam-hero-sep">•</span>
+              <span id="steam-detail-release">—</span>
+            </p>
+            <div class="steam-hero-tags" id="steam-detail-tags"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="steam-body">
+        <div class="steam-actions">
+          <button class="btn btn-primary steam-action-add" id="steam-detail-add">
+            ➕ Adicionar à Steam
+          </button>
+          <button class="btn btn-ghost steam-action-launch" id="steam-detail-launch">
+            ▶ Abrir na Steam
+          </button>
+          <button class="btn btn-ghost steam-action-store" id="steam-detail-store">
+            🛒 Ver na Steam Store
+          </button>
+        </div>
+
+        <p class="steam-summary" id="steam-detail-summary">—</p>
+
+        <h4 class="steam-section-title">Screenshots</h4>
+        <div class="steam-screenshots" id="steam-detail-screenshots"></div>
+
+        <h4 class="steam-section-title">Sobre o jogo</h4>
+        <div class="steam-about" id="steam-detail-about">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME DETAIL MODAL (Fase 5.3 — página individual do jogo, estilo Hydra) -->
+  <div class="steam-modal-overlay" id="game-detail-modal" aria-hidden="true">
+    <div class="steam-modal" role="dialog" aria-modal="true">
+      <button class="modal-close" id="game-detail-close" aria-label="Fechar">×</button>
+
+      <div class="steam-hero">
+        <img class="steam-hero-bg" id="game-detail-bg" src="" alt="" />
+        <div class="steam-hero-fade"></div>
+        <div class="steam-hero-content">
+          <img class="steam-hero-cover" id="game-detail-cover" src="" alt="" />
+          <div class="steam-hero-text">
+            <h2 id="game-detail-name">—</h2>
+            <p class="steam-hero-meta">
+              <span id="game-detail-developer">—</span>
+              <span class="steam-hero-sep">•</span>
+              <span id="game-detail-release">—</span>
+            </p>
+            <div class="steam-hero-tags" id="game-detail-tags"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="steam-body">
+        <p class="steam-summary" id="game-detail-summary">—</p>
+
+        <!-- Steam actions (só aparece se Steam Tools detectada e jogo tem appid) -->
+        <div class="game-steam-actions" id="game-detail-steam-actions" hidden>
+          <button class="btn btn-primary steam-action-play" id="game-detail-steam-play" hidden>
+            ▶ Jogar
+          </button>
+          <button class="btn btn-primary steam-action-install" id="game-detail-steam-install" hidden>
+            📥 Instalar
+          </button>
+          <button class="btn btn-primary steam-action-add" id="game-detail-steam-add">
+            ➕ Adicionar à Steam
+          </button>
+          <button class="btn btn-ghost steam-action-lib" id="game-detail-add-library" title="Adiciona o jogo na sua biblioteca pessoal sem baixar — útil pra jogos que você já tem instalado">
+            📚 Adicionar à biblioteca
+          </button>
+          <button class="btn btn-ghost" id="game-detail-steam-store">
+            🛒 Ver na Steam Store
+          </button>
+          <button class="btn btn-ghost game-config-btn" id="game-detail-config" title="Configurações do jogo" hidden>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            Configurar
+          </button>
+        </div>
+
+        <!-- Conquistas (Fase 9.x) — só aparece se o jogo tem schema na Steam -->
+        <div class="game-achievements-section" id="game-detail-achievements" hidden>
+          <div class="ach-section-head">
+            <h4 class="steam-section-title">🏆 Conquistas <span class="ach-section-count" id="game-detail-ach-count">0/0</span></h4>
+            <button class="btn btn-ghost ach-refresh-btn" id="game-detail-ach-refresh" title="Atualizar dados da Steam">🔄</button>
+          </div>
+          <div class="ach-progress-bar"><div class="ach-progress-fill" id="game-detail-ach-fill"></div></div>
+          <div class="ach-grid" id="game-detail-ach-grid"></div>
+        </div>
+
+        <h4 class="steam-section-title">📦 Servidores de Download</h4>
+        <div class="game-repacks-list" id="game-detail-repacks">
+          <!-- Cards de repacks inseridos via JS -->
+        </div>
+
+        <h4 class="steam-section-title" id="game-detail-shots-title">Screenshots</h4>
+        <div class="steam-screenshots" id="game-detail-screenshots"></div>
+
+        <h4 class="steam-section-title" id="game-detail-about-title">Sobre o jogo</h4>
+        <div class="steam-about" id="game-detail-about">—</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME CONFIG MODAL (Fase 9: config por jogo - Hydra-style) -->
+  <div class="zhub-modal-overlay game-config-overlay" id="game-config-modal" hidden>
+    <div class="zhub-modal game-config-box" role="dialog" aria-modal="true">
+      <div class="game-config-header">
+        <h3 id="game-config-title">Configurações</h3>
+        <button class="zhub-modal-close" id="game-config-close" aria-label="Fechar">×</button>
+      </div>
+
+      <div class="game-config-body">
+        <!-- Sidebar de abas -->
+        <div class="game-config-sidebar">
+          <button class="game-config-tab active" data-cfg-tab="geral">
+            <span>⚙</span><span>Geral</span>
+          </button>
+          <button class="game-config-tab" data-cfg-tab="locations">
+            <span>📁</span><span>Localizações</span>
+          </button>
+          <button class="game-config-tab game-config-tab-danger" data-cfg-tab="danger">
+            <span>⚠</span><span>Zona Vermelha</span>
+          </button>
+        </div>
+
+        <!-- Conteúdo das abas -->
+        <div class="game-config-content">
+
+          <!-- Aba Geral -->
+          <div class="game-config-panel" data-cfg-panel="geral">
+            <h4>Título</h4>
+            <input type="text" id="game-config-name" class="game-config-input" maxlength="100" placeholder="Nome do jogo" />
+            <p class="game-config-note">Nome mostrado nos cards e biblioteca. Deixe vazio pra usar o nome padrão.</p>
+          </div>
+
+          <!-- Aba Localizações -->
+          <div class="game-config-panel" data-cfg-panel="locations" hidden>
+            <h4>Executável</h4>
+            <p class="game-config-note">Caminho do .exe que será aberto ao clicar em "Jogar". Pra Steam Tools, deixar vazio usa o launch padrão da Steam.</p>
+            <div class="game-config-input-row">
+              <input type="text" id="game-config-exe" class="game-config-input" placeholder="Ex: D:\Games\Scritchy Scratchy\game.exe" readonly />
+              <div class="game-config-buttons">
+                <button class="btn btn-ghost game-config-btn-action" id="game-config-pick-exe">📂 Explorar</button>
+                <button class="btn btn-ghost game-config-btn-action" id="game-config-auto-detect">🔍 Detectar automático</button>
+                <button class="btn btn-ghost game-config-btn-action" id="game-config-clear-exe">✕ Limpar</button>
+              </div>
+            </div>
+            <button class="btn btn-ghost game-config-btn-folder" id="game-config-open-folder" hidden>
+              📂 Abrir pasta do jogo
+            </button>
+          </div>
+
+          <!-- Aba Zona Vermelha -->
+          <div class="game-config-panel game-config-danger-panel" data-cfg-panel="danger" hidden>
+            <h4>Zona Vermelha</h4>
+            <p class="game-config-note">Remova o jogo da sua biblioteca, apague os arquivos baixados pelo zJu4nn Hub ou resete o tempo de jogo. <strong>Ações irreversíveis.</strong></p>
+
+            <div class="danger-actions">
+              <button class="btn-danger" id="game-config-remove-library" type="button">
+                <span class="danger-icon">🗑</span>
+                <span class="danger-text">
+                  <strong>Remover da biblioteca</strong>
+                  <small>Tira o jogo desta lista — arquivos no disco permanecem</small>
+                </span>
+              </button>
+
+              <button class="btn-danger" id="game-config-reset-playtime" type="button">
+                <span class="danger-icon">⏱</span>
+                <span class="danger-text">
+                  <strong>Resetar tempo de jogo</strong>
+                  <small>Zera o tempo total e a data de último acesso</small>
+                </span>
+              </button>
+
+              <button class="btn-danger btn-danger-strong" id="game-config-delete-files" type="button" hidden>
+                <span class="danger-icon">💥</span>
+                <span class="danger-text">
+                  <strong>Apagar arquivos do PC</strong>
+                  <small>Deleta a pasta inteira do download (irreversível)</small>
+                </span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="game-config-footer">
+        <button class="btn btn-ghost" id="game-config-cancel">Cancelar</button>
+        <button class="btn btn-primary" id="game-config-save">Salvar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD SOURCE MODAL -->
+  <div class="dl-prompt-overlay" id="add-source-modal" aria-hidden="true">
+    <div class="dl-settings-card" role="dialog" aria-modal="true">
+      <div class="dl-settings-head">
+        <h3>Adicionar fonte</h3>
+        <button class="notice-close" id="add-source-close" aria-label="Fechar">×</button>
+      </div>
+
+      <div class="dl-settings-row">
+        <span class="dl-settings-label">Nome da fonte</span>
+        <input type="text" id="add-source-name" class="dl-settings-input"
+               placeholder="ex: KaOsKrew, FitGirl, Kazumi…" />
+      </div>
+
+      <div class="dl-settings-row">
+        <span class="dl-settings-label">URL do JSON</span>
+        <input type="text" id="add-source-url" class="dl-settings-input"
+               placeholder="https://hydralinks.cloud/sources/..." />
+        <span class="dl-settings-hint">URL pública do JSON no formato Hydra/Kazumi.</span>
+      </div>
+
+      <details class="add-source-presets">
+        <summary>Sugestões de fontes populares</summary>
+        <div class="preset-list" id="add-source-presets-list"></div>
+      </details>
+
+      <button class="btn btn-primary dl-settings-go" id="add-source-confirm">
+        + Adicionar e sincronizar
+      </button>
+    </div>
+  </div>
+
+  <!-- STEAM REMOVE CONFIRM MODAL -->
+  <div class="dl-prompt-overlay" id="steam-remove-modal" aria-hidden="true">
+    <div class="dl-prompt-card" role="dialog" aria-modal="true">
+      <div class="dl-prompt-icon steam-remove-icon">🗑</div>
+      <h3>Remover da Steam?</h3>
+      <p class="dl-prompt-game" id="steam-remove-game-name">—</p>
+
+      <div class="steam-remove-detail">
+        <p>O arquivo <code>.lua</code> será apagado e a <strong>Steam será reiniciada automaticamente</strong> para aplicar as mudanças.</p>
+      </div>
+
+      <div class="dl-prompt-actions">
+        <button class="dl-option dl-option-danger" id="steam-remove-confirm">
+          <div class="dl-option-icon">🗑</div>
+          <div class="dl-option-text">
+            <strong>Remover e reiniciar a Steam</strong>
+            <span>Apaga o .lua e reinicia a Steam agora.</span>
+          </div>
+        </button>
+        <button class="dl-option dl-option-ghost" id="steam-remove-cancel">
+          <div class="dl-option-text" style="text-align: center; width: 100%;">
+            <strong>Cancelar</strong>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HTTP UNSUPPORTED HOST MODAL (1Fichier, MEGA, MediaFire, etc) -->
+  <div class="dl-prompt-overlay" id="http-unsupported-modal" aria-hidden="true">
+    <div class="dl-prompt-card" role="dialog" aria-modal="true">
+      <button class="notice-close" id="http-unsupported-close" aria-label="Fechar">×</button>
+      <div class="dl-prompt-icon">⚠️</div>
+      <h3>Download manual necessário</h3>
+      <p class="dl-prompt-game" id="http-unsupported-host">—</p>
+
+      <div class="steam-remove-detail">
+        <p>Este host (<strong id="http-unsupported-hostname">—</strong>) precisa ser aberto no <b>navegador</b> pra fazer o download. Hosts como 1Fichier, MEGA e MediaFire têm proteções (captcha, contagem regressiva, criptografia) que não dá pra automatizar in-app.</p>
+        <p style="margin-top: 8px; opacity: 0.75; font-size: 12px;">💡 Host suportado in-app: <b>Pixeldrain</b>.</p>
+      </div>
+
+      <div class="dl-prompt-actions">
+        <button class="dl-option dl-option-primary" id="http-unsupported-open">
+          <div class="dl-option-icon">🌐</div>
+          <div class="dl-option-text">
+            <strong>Abrir no navegador</strong>
+            <span>Vai pro browser fazer o download manual.</span>
+          </div>
+        </button>
+        <button class="dl-option dl-option-ghost" id="http-unsupported-cancel">
+          <div class="dl-option-text" style="text-align: center; width: 100%;">
+            <strong>Cancelar</strong>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ONLINE FIX INFO: mostra senha + aviso da Steam -->
+  <div class="dl-prompt-overlay" id="onlinefix-modal" aria-hidden="true">
+    <div class="dl-prompt-card" role="dialog" aria-modal="true">
+      <button class="notice-close" id="onlinefix-close" aria-label="Fechar">×</button>
+      <div class="dl-prompt-icon">🌐</div>
+      <h3>Online Fix detectado</h3>
+      <p class="dl-prompt-game">Este é um patch da equipe Online Fix.</p>
+
+      <div class="onlinefix-info">
+        <div class="onlinefix-row">
+          <span class="onlinefix-label">🔑 Senha das pastas zipadas</span>
+          <code class="onlinefix-pwd" id="onlinefix-pwd">online-fix.me</code>
+          <button class="onlinefix-copy" id="onlinefix-copy" title="Copiar">📋</button>
+        </div>
+
+        <div class="onlinefix-warning">
+          <strong>⚠️ Steam aberta é OBRIGATÓRIO</strong>
+          <p>Pra Online Fix funcionar, abre a Steam (não precisa logar em conta específica) antes de iniciar o jogo. Se a Steam não tiver rodando, o jogo fecha sozinho.</p>
+        </div>
+
+        <ol class="onlinefix-steps">
+          <li>Extrai os arquivos da pasta com a senha acima</li>
+          <li>Abre a Steam</li>
+          <li>Roda o <code>.exe</code> do jogo direto da pasta extraída</li>
+        </ol>
+      </div>
+
+      <button class="btn btn-primary onlinefix-go" id="onlinefix-open-folder">
+        📁 Abrir pasta do download
+      </button>
+    </div>
+  </div>
+
+  <!-- DOWNLOAD SETTINGS: aparece após o user escolher "Baixar dentro do app" -->
+  <div class="dl-prompt-overlay" id="dl-settings-overlay" aria-hidden="true">
+    <div class="dl-settings-card" role="dialog" aria-modal="true">
+      <div class="dl-settings-head">
+        <h3>Ajustes do download</h3>
+        <button class="notice-close" id="dl-settings-close" aria-label="Fechar">×</button>
+      </div>
+      <p class="dl-settings-disk" id="dl-settings-disk">— livre em disco</p>
+
+      <div class="dl-settings-row">
+        <span class="dl-settings-label">Jogo</span>
+        <span class="dl-settings-value" id="dl-settings-game">—</span>
+      </div>
+
+      <div class="dl-settings-row">
+        <span class="dl-settings-label">Tamanho do download</span>
+        <span class="dl-settings-value dl-settings-size" id="dl-settings-size">
+          <span class="dl-spinner"></span>
+          <span id="dl-settings-size-text">Calculando…</span>
+        </span>
+      </div>
+
+      <div class="dl-settings-row">
+        <span class="dl-settings-label">Diretório de download</span>
+        <div class="dl-settings-pathwrap">
+          <input type="text" id="dl-settings-path" class="dl-settings-input" placeholder="Carregando..." />
+          <button class="dl-settings-explore" id="dl-settings-pick">Explorar</button>
+        </div>
+        <span class="dl-settings-hint">Vai criar uma subpasta com o nome do jogo dentro deste diretório.</span>
+      </div>
+
+      <label class="dl-settings-check">
+        <input type="checkbox" id="dl-settings-remember" checked />
+        <span>Lembrar este diretório como padrão</span>
+      </label>
+
+      <button class="btn btn-primary dl-settings-go" id="dl-settings-start">
+        ⬇ Iniciar download
+      </button>
+    </div>
+  </div>
+
+  <!-- DOWNLOAD PROMPT: aparece quando o user clica num link magnet -->
+  <div class="dl-prompt-overlay" id="dl-prompt" aria-hidden="true">
+    <div class="dl-prompt-card" role="dialog" aria-modal="true">
+      <button class="notice-close" id="dl-prompt-close" aria-label="Fechar">×</button>
+      <div class="dl-prompt-icon">📥</div>
+      <h3>Como você quer baixar?</h3>
+      <p class="dl-prompt-game" id="dl-prompt-game"></p>
+
+      <div class="dl-prompt-actions">
+        <button class="dl-option dl-option-primary" id="dl-option-app">
+          <div class="dl-option-icon">⚡</div>
+          <div class="dl-option-text">
+            <strong>Baixar dentro do app</strong>
+            <span>Recomendado — barra de progresso, pausar/retomar, notificação ao terminar.</span>
+          </div>
+        </button>
+
+        <button class="dl-option" id="dl-option-external">
+          <div class="dl-option-icon">🔗</div>
+          <div class="dl-option-text">
+            <strong>Abrir no torrent client externo</strong>
+            <span>qBittorrent, uTorrent ou outro que você já usa.</span>
+          </div>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stubs invisíveis pra IDs que o site-engine.js espera (vinham do footer do site) -->
+  <span id="year" hidden></span>
+
+  <!-- ============== SCRIPTS (ordem importa) ============== -->
+  <!-- Bootstrap do app: titlebar, sidebar, navegação -->
+  <script src="app.js"></script>
+
+  <!-- Dados (sincronizados do site) -->
+  <script src="data/steamTops.js"></script>
+  <script src="data/greenGames.js"></script>
+
+  <!-- Engine de UI do site (sincronizada — render, filtros, picker) -->
+  <script src="lib/site-engine.js"></script>
+
+  <!-- Views específicas do app (carregam DEPOIS do engine pra wrapear handlers) -->
+  <script src="views/downloads.js"></script>
+  <script src="views/settings.js"></script>
+  <script src="views/buscar.js"></script>
+  <script src="views/catalogo.js"></script>
+  <script src="views/inicio.js"></script>
+  <script src="views/biblioteca.js"></script>
+  <script src="views/perfil.js"></script>
+  <script src="views/game-config.js"></script>
+  <script src="views/friends.js"></script>
+  <script src="views/friend-profile.js"></script>
+  <script src="achievement-toast.js"></script>
+  <script src="boot-loader.js"></script>
+  <script src="auth-gate.js"></script>
+</body>
+</html>

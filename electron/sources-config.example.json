@@ -1,0 +1,18 @@
+{
+  "_comment": [
+    "Configuração de fontes pra adicionar jogos à biblioteca via Steam Tools.",
+    "COPIE este arquivo pra `sources-config.json` (gitignored) e preencha com seus próprios endpoints.",
+    "Cada fonte: { name, url, successCode?, unavailableCode?, requiresAuth?, authSettingKey? }",
+    "URL deve ter placeholder {appid}. Se requiresAuth=true, header Authorization Bearer é adicionado",
+    "lendo a settings key indicada em authSettingKey."
+  ],
+  "luaApis": [
+    {
+      "name": "Source A",
+      "url": "https://example.com/sources/{appid}.zip",
+      "successCode": 200,
+      "unavailableCode": 404
+    }
+  ],
+  "installScript": "https://example.com/install-plugin.ps1"
+}

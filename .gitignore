@@ -1,0 +1,58 @@
+# ─── Dependências e build ───────────────────────────────────────
+node_modules/
+dist/
+out/
+build/
+
+# ─── Logs ───────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ─── OS ─────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ─── Editor / IDE ───────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ─── Env ────────────────────────────────────────────────────────
+.env
+.env.local
+.env.*.local
+
+# ─── Tokens / chaves privadas (NUNCA COMMITAR) ─────────────────
+*.txt
+secrets/
+
+# ─── Configuração privada de fontes (cada fork cria a sua) ─────
+electron/sources-config.json
+
+# ─── Documentação interna do dev ───────────────────────────────
+CONTEXTO_APP.md
+
+# ─── User data (runtime, gerado pelo app) ──────────────────────
+userData/
+
+# ─── Imagens de origem privadas (assets brutos do canal) ───────
+Images/
+
+# ─── Scripts privados (deploy, migrações com paths absolutos / tokens) ─
+scripts/run-supabase-sql.js
+scripts/deploy-cf-worker.js
+scripts/sync-from-site.js
+supabase/
+
+# ─── Pasta do site web local (parallel project, fora do escopo) ─
+../Site zJu4nnTools/
+
+# ─── Pesquisa / experimentos / docs internos (NÃO publicar) ─────
+Ideias/
+Guia*.md
+*.docx
+cloudflare-worker.js
