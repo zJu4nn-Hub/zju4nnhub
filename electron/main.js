@@ -3,6 +3,7 @@
 
 const { app, BrowserWindow, ipcMain, shell, dialog, nativeImage } = require('electron');
 const path = require('node:path');
+const fs = require('node:fs');
 // Auto-updater (lazy require — só carrega em produção)
 let autoUpdater = null;
 const torrentEngine = require('./torrent-engine');
@@ -659,16 +660,45 @@ function loadTokenFromFile(settingKey, fileName) {
   }
 }
 
+// Carrega de env var (settings.json não tinha) — usado em build/release com vars setadas
+function loadTokenFromEnv(settingKey, envName) {
+  if (settings.get(settingKey)) return;
+  const v = process.env[envName];
+  if (v && v.trim()) {
+    settings.set(settingKey, v.trim());
+    console.log(`[main] ${settingKey} carregado de env ${envName}`);
+  }
+}
+
+// Carrega de bundle.json (gerado em build time com tokens embutidos no .asar)
+function loadTokenFromBundle(settingKey, bundleKey) {
+  if (settings.get(settingKey)) return;
+  try {
+    const bundlePath = path.join(__dirname, 'token-bundle.json');
+    if (!fs.existsSync(bundlePath)) return;
+    const bundle = JSON.parse(fs.readFileSync(bundlePath, 'utf8'));
+    if (bundle[bundleKey] && String(bundle[bundleKey]).trim()) {
+      settings.set(settingKey, String(bundle[bundleKey]).trim());
+      console.log(`[main] ${settingKey} carregado de token-bundle`);
+    }
+  } catch {}
+}
+
 function ensureSteamApiKey() {
-  loadTokenFromFile('steamApiKey', 'Token Steam.txt');
+  loadTokenFromBundle('steamApiKey', 'steamApiKey');
+  loadTokenFromEnv('steamApiKey', 'STEAM_API_KEY');
+  loadTokenFromFile('steamApiKey', 'Token Steam.txt'); // fallback dev local
 }
 
 function ensureSourceDKey() {
-  // Settings key 'sourceDKey'; arquivo .txt local pode ter qualquer nome (gitignored)
+  loadTokenFromBundle('sourceDKey', 'sourceDKey');
+  loadTokenFromEnv('sourceDKey', 'SOURCE_D_KEY');
   loadTokenFromFile('sourceDKey', 'Token Source D.txt');
 }
 
 function ensureImgbbKey() {
+  loadTokenFromBundle('imgbbKey', 'imgbbKey');
+  loadTokenFromEnv('imgbbKey', 'IMGBB_KEY');
   loadTokenFromFile('imgbbKey', 'Token imgbb.txt');
 }
 
@@ -782,6 +812,7 @@ app.whenReady().then(async () => {
     }
 
     // Auto-detect .exe na pasta (após extração) e salva como override
+    let resolvedAppid = null;
     try {
       // Não sobrescreve se user já configurou manualmente
       const existing = gameOverrides.get(overrideKey);
@@ -795,6 +826,23 @@ app.whenReady().then(async () => {
     } catch (err) {
       console.warn('[main] auto-detect post-extract falhou:', err.message);
     }
+
+    // Auto-cleanup: se existe entry na manualLibrary com appid que bate com o download,
+    // remove ela (evita duplicação na biblioteca: lib_{appid} + dl_{id} pro mesmo jogo)
+    try {
+      const all = manualLibrary.list();
+      const dlName = (dl.name || '').toLowerCase().trim();
+      // Heurística simples: nome similar (sem precisar de Steam search aqui)
+      for (const m of all) {
+        const mname = (m.name || '').toLowerCase().trim();
+        if (mname && dlName.includes(mname)) {
+          manualLibrary.remove(m.appid);
+          console.log(`[main] auto-cleanup manual lib: removeu ${m.name} (appid ${m.appid}) por download bater`);
+        }
+      }
+    } catch (err) {
+      console.warn('[main] auto-cleanup manual lib falhou:', err.message);
+    }
   }
   try { torrentEngine.setOnDownloadComplete?.((dl) => postDownloadProcess(dl, 'torrent')); } catch {}
   try { httpDownloader.setOnDownloadComplete?.((dl) => postDownloadProcess(dl, 'http')); } catch {}
@@ -806,26 +854,54 @@ app.whenReady().then(async () => {
   });
 });
 
+// Kill switch — se shutdown demorar muito, força quit pra evitar processos zombie
+let isQuitting = false;
+function forceKillIn(ms) {
+  setTimeout(() => {
+    console.log('[main] kill switch — forçando exit');
+    try { app.exit(0); } catch {}
+    try { process.exit(0); } catch {}
+  }, ms).unref?.();
+}
+
 app.on('before-quit', async (event) => {
-  // Garante que o cache de URLs de capas seja persistido (debounce pendente)
-  try { coverCache.shutdown(); } catch {}
-  // Flush achievements + schemas
+  if (isQuitting) return;
+  isQuitting = true;
+  // KILL SWITCH: se nada disso terminar em 3s, force exit
+  forceKillIn(3000);
+
+  // Limpa todos os timers de achievements (background ticker + watchers)
+  try { achievements.stopBackgroundTicker?.(); } catch {}
   try { achievements.shutdown(); } catch {}
   try { achievementSchema.shutdown(); } catch {}
-  // Friends — fecha channels Realtime
-  try { await friends.shutdown(); } catch {}
-  // Dá uma chance pro client torrent fechar limpo
-  // (não trava se demorar — é melhor app fechar do que ficar pendurado)
+  try { coverCache.shutdown(); } catch {}
+
+  // Friends — Realtime channels (com timeout)
+  try {
+    await Promise.race([
+      friends.shutdown(),
+      new Promise((resolve) => setTimeout(resolve, 1000)),
+    ]);
+  } catch {}
+
+  // Torrent engine (com timeout)
   try {
     await Promise.race([
       torrentEngine.shutdown(),
       new Promise((resolve) => setTimeout(resolve, 1500)),
     ]);
   } catch {}
+
+  // Fecha overlay window manualmente (mainWindow já fecha ao quit)
+  try { if (overlayWindow && !overlayWindow.isDestroyed()) overlayWindow.destroy(); } catch {}
 });
 
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') app.quit();
+  if (process.platform !== 'darwin') {
+    app.quit();
+    // Garante que se quit demorar, kill em 3s
+    forceKillIn(3000);
+  }
 });
 
 app.on('activate', () => {

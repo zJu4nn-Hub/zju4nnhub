@@ -58,7 +58,12 @@
         showError(result.error);
         return;
       }
-      // Sucesso → SIGNED_IN vem via auth:state, abre app de lá
+      // Sucesso — abre o app DIRETAMENTE em vez de esperar broadcast SIGNED_IN
+      // (em alguns casos o evento broadcast pode chegar antes do listener estar pronto)
+      if (result?.user) {
+        openApp();
+      }
+      // Senão, espera SIGNED_IN broadcast (fallback)
     } catch (err) {
       showError(err?.message || 'Falha desconhecida');
     }

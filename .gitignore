@@ -32,6 +32,8 @@ secrets/
 
 # ─── Configuração privada de fontes (cada fork cria a sua) ─────
 electron/sources-config.json
+# ─── Bundle de tokens (gerado em build, com tokens privados) ───
+electron/token-bundle.json
 
 # ─── Documentação interna do dev ───────────────────────────────
 CONTEXTO_APP.md

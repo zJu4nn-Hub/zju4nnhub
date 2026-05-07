@@ -13,7 +13,9 @@
   if (!$loader) return;
 
   const MIN_DURATION = 800;  // mostra ao menos 800ms pra não piscar
-  const MAX_DURATION = 5000; // nunca passa de 5s (espera capas pesadas baixarem)
+  const MAX_DURATION = 3500; // nunca passa de 3.5s (espera capas pesadas baixarem)
+  const HARD_KILL_MS = 7000; // kill switch absoluto — se nada funcionar, fecha em 7s
+  let runStartedAt = 0;
 
   let didRun = false;
 
@@ -37,8 +39,18 @@
     if (didRun) return;
     didRun = true;
     const startedAt = Date.now();
+    runStartedAt = startedAt;
     $loader.hidden = false;
     setProgress(10, 'Preparando sua biblioteca…');
+
+    // KILL SWITCH ABSOLUTO — se nada mais funcionar, mata o boot-loader em HARD_KILL_MS
+    setTimeout(() => {
+      if (!$loader.hidden) {
+        console.warn('[boot-loader] hard-kill: forçando fechamento');
+        $loader.classList.add('fading');
+        setTimeout(() => { $loader.hidden = true; }, 420);
+      }
+    }, HARD_KILL_MS);
 
     // Anima barra suavemente até 80% baseada em tempo (visual feedback)
     const barTimer = setInterval(() => {

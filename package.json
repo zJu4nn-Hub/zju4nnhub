@@ -1,6 +1,6 @@
 {
   "name": "zju4nn-hub",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "zJu4nn Hub — App desktop com catálogo de jogos verdes, downloads e biblioteca",
   "author": {
     "name": "zJu4nn",
@@ -11,11 +11,13 @@
   "private": true,
   "scripts": {
     "sync": "node -e \"try { require('fs').accessSync('scripts/sync-from-site.js'); require('child_process').execSync('node scripts/sync-from-site.js', {stdio:'inherit'}); } catch { console.log('[sync] script local ausente — pulando (ok pra builds limpas)'); }\"",
+    "bundle-tokens": "node scripts/bundle-tokens.js",
     "predev": "npm run sync",
     "dev": "electron .",
-    "prebuild": "npm run sync",
+    "prebuild": "npm run sync && npm run bundle-tokens",
     "build": "electron-builder --win",
-    "release": "electron-builder --win --publish=always"
+    "prerelease": "npm run sync && npm run bundle-tokens",
+    "release": "electron-builder --win --publish=always --config.npmRebuild=false"
   },
   "devDependencies": {
     "electron": "^32.2.0",

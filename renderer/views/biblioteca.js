@@ -552,7 +552,8 @@
     const completedHttp = httpDls.filter((h) => h?.status === 'done');
 
     // Detect installer pra cada e enrich com playtime — paralelizado
-    const jobs = [
+    // Primeiro processa downloads reais (têm prioridade)
+    const downloadJobs = [
       ...completedTorrents.map((t) => enrichDownload({
         id: t.id, name: t.name, path: t.path, totalSize: t.totalSize, completedAt: t.completedAt,
       }).then((it) => it && dlItems.set(t.id, it))),
@@ -563,10 +564,20 @@
         totalSize: (h.files || []).reduce((s, f) => s + (f.size || 0), 0),
         completedAt: h.finishedAt,
       }).then((it) => it && dlItems.set(h.id, it))),
-      // Entries adicionadas manualmente (sem download via app)
-      ...manualEntries.map((m) => enrichManualEntry(m).then((it) => it && dlItems.set(`lib_${m.appid}`, it))),
     ];
-    await Promise.all(jobs);
+    await Promise.all(downloadJobs);
+
+    // Coleta os appids que JÁ vieram via download — evita duplicar com manual lib
+    const downloadedAppids = new Set();
+    for (const it of dlItems.values()) {
+      if (it.appid) downloadedAppids.add(Number(it.appid));
+    }
+
+    // Entries manuais — só adiciona se NÃO existe download pro mesmo appid
+    const manualJobs = manualEntries
+      .filter((m) => !downloadedAppids.has(Number(m.appid)))
+      .map((m) => enrichManualEntry(m).then((it) => it && dlItems.set(`lib_${m.appid}`, it)));
+    await Promise.all(manualJobs);
   }
 
   // Enriquece uma entry da manualLibrary pra render no grid de Baixados
@@ -959,6 +970,19 @@
   try {
     window.zhub.http.onDone?.(() => refreshDownloadsList());
     window.zhub.http.onRemoved?.(() => refreshDownloadsList());
+  } catch {}
+
+  // Steam Tools state listener — refresh quando user adiciona/remove jogo no Catálogo
+  function refreshSteamToolsList() {
+    loadSteamToolsGames().then(() => renderSteamToolsGrid()).catch(() => {});
+  }
+  try {
+    window.zhub.steamTools.onState?.((payload) => {
+      // 'done' / 'removed' / 'added' / etc — qualquer mudança recarrega
+      if (payload?.kind === 'done' || payload?.kind === 'removed' || payload?.kind === 'added') {
+        refreshSteamToolsList();
+      }
+    });
   } catch {}
 
   // Achievement state listener — atualiza pill X/Y quando muda

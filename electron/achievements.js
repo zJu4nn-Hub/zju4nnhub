@@ -322,7 +322,7 @@ async function scanOnce({ key, appid, exePath }) {
 // E também edits manuais do user fora do app.
 // ============================================================
 let bgTimer = null;
-const BG_SCAN_INTERVAL_MS = 30_000; // 30s
+const BG_SCAN_INTERVAL_MS = 5 * 60 * 1000; // 5 min — reduz uso de CPU pra disco/parser
 
 function startBackgroundTicker() {
   if (bgTimer) return;
