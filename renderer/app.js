@@ -45,6 +45,42 @@
   }
 
   // ============================================================
+  // 2.5. AUTO-UPDATER UI (Fase 13)
+  // ============================================================
+  const $updateBanner = document.getElementById('update-banner');
+  const $updateTitle = document.getElementById('update-banner-title');
+  const $updateSub = document.getElementById('update-banner-sub');
+  const $updateBtn = document.getElementById('update-banner-btn');
+  const $updateClose = document.getElementById('update-banner-close');
+  if (typeof window.zhub?.updater?.onAvailable === 'function') {
+    window.zhub.updater.onAvailable(({ version }) => {
+      if (!$updateBanner) return;
+      $updateBanner.hidden = false;
+      $updateTitle.textContent = `Atualização v${version} disponível`;
+      $updateSub.textContent = 'Baixando…';
+      $updateBtn.hidden = true;
+    });
+    window.zhub.updater.onProgress(({ percent }) => {
+      if ($updateSub) $updateSub.textContent = `Baixando… ${percent}%`;
+    });
+    window.zhub.updater.onReady(({ version }) => {
+      if (!$updateBanner) return;
+      $updateBanner.hidden = false;
+      $updateTitle.textContent = `Atualização v${version} pronta`;
+      $updateSub.textContent = 'Reinicie pra instalar';
+      $updateBtn.hidden = false;
+    });
+    $updateBtn?.addEventListener('click', async () => {
+      $updateBtn.disabled = true;
+      $updateBtn.textContent = 'Reiniciando…';
+      try { await window.zhub.updater.installNow(); } catch {}
+    });
+    $updateClose?.addEventListener('click', () => {
+      if ($updateBanner) $updateBanner.hidden = true;
+    });
+  }
+
+  // ============================================================
   // 3. NAVEGAÇÃO SPA (sidebar → views)
   // ============================================================
   const VIEWS = ['inicio', 'catalogo', 'buscar', 'hypervisor', 'biblioteca', 'downloads', 'ajustes', 'perfil'];
