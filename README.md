@@ -10,6 +10,7 @@
 
 [![Última versão](https://img.shields.io/github/v/release/zJu4nn-Hub/zju4nnhub?style=for-the-badge&color=ff3d9a&labelColor=14091e)](https://github.com/zJu4nn-Hub/zju4nnhub/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/zJu4nn-Hub/zju4nnhub/total?style=for-the-badge&color=a04bff&labelColor=14091e)](https://github.com/zJu4nn-Hub/zju4nnhub/releases)
+[![License](https://img.shields.io/badge/License-MIT-2bd6e6?style=for-the-badge&labelColor=14091e)](LICENSE)
 [![Platform](https://img.shields.io/badge/Windows-10_+-0078d4?style=for-the-badge&logo=windows&labelColor=14091e)](https://github.com/zJu4nn-Hub/zju4nnhub/releases/latest)
 [![Discord](https://img.shields.io/badge/Discord-Entrar-5865F2?style=for-the-badge&logo=discord&logoColor=white&labelColor=14091e)](https://discord.gg/qpXt7eDkkf)
 
@@ -25,8 +26,8 @@
 - 👥 **Sistema de Amigos** — vê quem está online e em qual jogo estão jogando, estilo Steam
 - 🏆 **Conquistas trackadas** automaticamente — acompanha seu progresso e compara com a galera
 - ☁ **Cloud Saves** (Premium) — saves na nuvem, sincroniza entre PCs
-- 🔄 **Sync de biblioteca** (Premium) — Steam Tools sincronizada entre PCs
-- 🔧 **Correções automáticas** pros jogos chatos (bypass DRM, modo online crackeado)
+- 🔄 **Sync de biblioteca** (Premium) — biblioteca sincronizada entre PCs
+- 🔧 **Compatibilidade automática** — fixes pra jogos que precisam de ajustes específicos pra rodar
 - 🔔 **Notificações** aparecem em cima do jogo, mesmo em tela cheia
 - 🦋 **Perfil personalizado** — avatar, banner e bio
 - 🔑 **Login com Discord** — sem cadastro chato
@@ -49,12 +50,10 @@
 R$ 9,90/mês ou R$ 99,90/ano. Inclui:
 
 - ☁ Cloud Saves até 100MB por jogo
-- 🔄 Sync da biblioteca Steam Tools entre PCs
+- 🔄 Sync da biblioteca entre PCs
 - 👑 Badge dourado no perfil + ring no avatar
 - 💎 Canal exclusivo no Discord
 - 🎫 Sugestões priorizadas
-
-**Ou ganhe Premium grátis** gravando vídeos sobre o Hub no YouTube: cada 1.000 views = +30 dias de Premium. Sem limite. Detalhes no [Discord](https://discord.gg/qpXt7eDkkf).
 
 [**Ver Premium →**](https://zju4nnhub.com/premium)
 
@@ -63,6 +62,12 @@ R$ 9,90/mês ou R$ 99,90/ano. Inclui:
 ## 💬 Suporte
 
 Qualquer dúvida ou problema, fala com a galera no [**Discord oficial**](https://discord.gg/qpXt7eDkkf). Bug? Reporta lá no canal `#🐛┃bugs`.
+
+---
+
+## 📄 Licença
+
+[MIT](LICENSE) — use, modifique, contribua. Veja o arquivo LICENSE pra detalhes.
 
 ---
 
