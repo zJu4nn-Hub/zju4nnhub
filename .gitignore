@@ -58,3 +58,10 @@ Ideias/
 Guia*.md
 *.docx
 cloudflare-worker.js
+
+# ─── Catálogo de jogos (servido via runtime fetch do site, não precisa no repo) ─
+renderer/data/greenGames.js
+
+# ─── Scripts de deploy privados (paths absolutos + tokens) ───────
+.deploy-hub-public.cjs
+.delete-from-hub-public.cjs
