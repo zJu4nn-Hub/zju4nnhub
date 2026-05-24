@@ -25,7 +25,7 @@
 - 📚 **Biblioteca pessoal** com tempo de jogo, conquistas e estatísticas
 - 👥 **Sistema de Amigos** — vê quem está online e em qual jogo estão jogando, estilo Steam
 - 🏆 **Conquistas trackadas** automaticamente — acompanha seu progresso e compara com a galera
-- 🤖**Assistente IA** - chat de IA pra tirar dúvidas sobre o app, jogos e correções. Inclui também um Recomendador de jogos que olha o seu PC e sugere o que roda bem.
+- 🤖**Assistente IA** - chat de IA pra tirar dúvidas sobre o app, jogos etc. Inclui também um Recomendador de jogos que olha o seu PC e sugere o que roda bem.
 - ☁ **Cloud Saves** (Premium) — saves na nuvem, sincroniza entre PCs
 - 🔄 **Sync de biblioteca** (Premium) — biblioteca sincronizada entre PCs
 - 🔧 **Compatibilidade automática** — fixes pra jogos que precisam de ajustes específicos pra rodar
