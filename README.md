@@ -51,6 +51,7 @@ R$ 9,90/mês ou R$ 99,90/ano. Inclui:
 
 - ☁ Cloud Saves até 100MB por jogo
 - 🔄 Sync da biblioteca entre PCs
+- 🤖Assistente IA
 - 👑 Badge dourado no perfil + ring no avatar
 - 💎 Canal exclusivo no Discord
 - 🎫 Sugestões priorizadas
