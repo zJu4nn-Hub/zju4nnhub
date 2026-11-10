@@ -1,105 +1,139 @@
 <div align="center">
 
-<img src="assets/logo.png" alt="zJu4nn Hub" width="160" />
+<a href="https://zju4nnhub.com"><img src="assets/logo.png" alt="zJu4nn Hub" width="140" /></a>
 
-# zJu4nn Hub
+<h1>zJu4nn Hub</h1>
 
-**App grátis de jogos de PC pra Windows e Linux, feito no Brasil** ✨
+<p><b>Todos os seus jogos de PC num cantinho só.</b><br />
+App grátis pra Windows e Linux, feito no Brasil 💜</p>
 
-🌐 **Site oficial:** [**zju4nnhub.com**](https://zju4nnhub.com) · [English](https://zju4nnhub.com/en) · [Español](https://zju4nnhub.com/es)
+[![Última versão](https://img.shields.io/github/v/release/zJu4nn-Hub/zju4nnhub?style=flat-square&label=vers%C3%A3o&color=ff3d9a&labelColor=14091e)](https://github.com/zJu4nn-Hub/zju4nnhub/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/zJu4nn-Hub/zju4nnhub/total?style=flat-square&label=downloads&color=a04bff&labelColor=14091e)](https://github.com/zJu4nn-Hub/zju4nnhub/releases)
+[![VirusTotal](https://img.shields.io/badge/VirusTotal-0%20de%2067-2bd67b?style=flat-square&labelColor=14091e)](https://www.virustotal.com/gui/file/5b1a5673c9718c9e35433a4ff400280cc15657b7a921a0caf01a26a720dd9805)
+[![Discord](https://img.shields.io/badge/Discord-comunidade-5865F2?style=flat-square&logo=discord&logoColor=white&labelColor=14091e)](https://discord.gg/qpXt7eDkkf)
 
-[![Última versão](https://img.shields.io/github/v/release/zJu4nn-Hub/zju4nnhub?style=for-the-badge&color=ff3d9a&labelColor=14091e)](https://github.com/zJu4nn-Hub/zju4nnhub/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/zJu4nn-Hub/zju4nnhub/total?style=for-the-badge&color=a04bff&labelColor=14091e)](https://github.com/zJu4nn-Hub/zju4nnhub/releases)
-[![License](https://img.shields.io/badge/License-MIT-2bd6e6?style=for-the-badge&labelColor=14091e)](LICENSE)
-[![Windows](https://img.shields.io/badge/Windows-10_|_11-0078d4?style=for-the-badge&logo=windows&labelColor=14091e)](https://github.com/zJu4nn-Hub/zju4nnhub/releases/latest)
-[![Linux](https://img.shields.io/badge/Linux-AppImage-f5a623?style=for-the-badge&logo=linux&logoColor=white&labelColor=14091e)](https://github.com/zJu4nn-Hub/zju4nnhub/releases/latest)
-[![Discord](https://img.shields.io/badge/Discord-Entrar-5865F2?style=for-the-badge&logo=discord&logoColor=white&labelColor=14091e)](https://discord.gg/qpXt7eDkkf)
+<br />
 
-[**📥 Baixar última versão**](https://zju4nnhub.com/) · [**👑 Premium**](https://zju4nnhub.com/premium) · [**💬 Discord**](https://discord.gg/qpXt7eDkkf)
+<a href="https://zju4nnhub.com"><img src="https://img.shields.io/badge/Baixar_pra_Windows-ff3d9a?style=for-the-badge&logo=windows&logoColor=white" alt="Baixar pra Windows" height="40" /></a>
+&nbsp;
+<a href="https://github.com/zJu4nn-Hub/zju4nnhub/releases/latest/download/zJu4nn-Hub-x86_64.AppImage"><img src="https://img.shields.io/badge/Baixar_pra_Linux-a04bff?style=for-the-badge&logo=linux&logoColor=white" alt="Baixar pra Linux" height="40" /></a>
+
+<sub>🇧🇷 <a href="https://zju4nnhub.com">Português</a> · 🇺🇸 <a href="https://zju4nnhub.com/en">English</a> · 🇪🇸 <a href="https://zju4nnhub.com/es">Español</a></sub>
+
+<br /><br />
+
+<img src="assets/telas/catalogo.webp" alt="Catálogo do zJu4nn Hub com capas, filtros por gênero e notas" width="100%" />
 
 </div>
 
----
+<br />
 
 ## 🎮 O que é
 
-O **zJu4nn Hub** junta seus jogos de PC num lugar só. Ele tem um catálogo com **mais de 2.900 jogos** que você instala com um clique, conta suas **conquistas e tempo de jogo**, mostra **quais amigos estão online** e o que estão jogando, e guarda seus **saves na nuvem** (Premium). Funciona no **Windows 10 e 11** e no **Linux** (AppImage), fala **português, inglês e espanhol** e você entra com o seu **Discord**, sem criar senha nova.
+O **zJu4nn Hub** junta tudo o que você precisa pra jogar no PC: um catálogo com **mais de 2.900 jogos** que você instala com **um clique**, suas **conquistas e horas de jogo** contadas sozinhas, **amigos online** pra ver quem tá jogando o quê e **saves na nuvem** pra nunca perder o progresso.
 
-O app é **100% grátis**, sem anúncio. O Premium é opcional.
+Você entra com o seu **Discord**, sem criar senha nova. O app é **100% grátis e sem anúncio** — e fala **português, inglês e espanhol**.
 
----
+<br />
 
-## ✨ O que tem aqui
+## ✨ Tudo num app só
 
-- 🛒 **Catálogo com mais de 2.900 jogos** — capa, gênero, nota e se roda no seu PC; o Hub baixa, extrai e instala
-- 📚 **Biblioteca pessoal** com tempo de jogo, conquistas e estatísticas
-- ⭐ **Nível do 1 ao 200, selos e fundos animados** no perfil
-- 👥 **Amigos online e chat** — vê quem está jogando o quê, responde e reage com emoji
-- 🏆 **Conquistas trackadas** automaticamente — acompanha seu progresso e compara com a galera
-- ⭐ **Avaliações** — dê de 1 a 5 estrelas pros jogos que você jogou
-- 🧩 **O Hub dentro da Steam** — botões do Hub na loja e na Biblioteca da Steam (Windows)
-- 🔀 **Mashups** — mods que juntam dois jogos num só, instalados com um clique
-- 🤖 **Assistente IA** — tira dúvidas sobre o app e erros de jogo; inclui um Recomendador que olha o seu PC e sugere o que roda bem
-- ☁ **Saves na nuvem** (Premium) — o save sobe sozinho ao fechar o jogo e volta em qualquer PC
-- 🔄 **Biblioteca em qualquer PC** (Premium)
-- 🔧 **Correções automáticas** pra jogos que precisam de ajustes pra rodar
-- 🐧 **Linux** — escolha o Proton de cada jogo, com GameMode e MangoHud
-- 🎨 **7 temas** ou o seu próprio · 🔔 notificações por cima do jogo · ⚙️ atualização automática
+<table>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="assets/telas/biblioteca.webp" alt="Biblioteca com tempo de jogo e conquistas" width="100%" />
+      <h3>📚 Sua biblioteca</h3>
+      Todos os seus jogos com capa, tempo de jogo e conquistas. Fechou 100%? O card fica dourado.
+    </td>
+    <td width="50%" valign="top">
+      <img src="assets/telas/perfil.webp" alt="Perfil com nível, selos e jogo favorito" width="100%" />
+      <h3>⭐ Nível, selos e perfil</h3>
+      Cada hora jogada vira ponto. Suba até o nível 200, ganhe selos e deixe o perfil com fundo animado.
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" valign="top">
+      <img src="assets/telas/amigos.webp" alt="Lista de amigos mostrando quem está jogando" width="100%" />
+      <h3>👥 Amigos online</h3>
+      Veja quem tá online e o que cada um tá jogando agora. Combine a jogatina pelo chat, sem sair do Hub.
+    </td>
+    <td width="50%" valign="top">
+      <img src="assets/telas/mashup.webp" alt="Minecraft dentro do Elden Ring" width="100%" />
+      <h3>🔀 Mashups</h3>
+      Dois jogos num só: Minecraft dentro do Elden Ring, GTA V com blocos e muito mais, instalados com um clique.
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" valign="top">
+      <img src="assets/telas/steam.webp" alt="Botões do zJu4nn Hub dentro da loja da Steam" width="100%" />
+      <h3>🧩 O Hub dentro da Steam</h3>
+      Abriu um jogo na loja da Steam? Os botões do Hub aparecem ali mesmo: baixar, colocar na sua Steam e liberar o online.
+    </td>
+  </tr>
+</table>
 
----
+**E ainda:** 🖥️ **Roda no seu PC?** em cada jogo · ☁️ **Saves na nuvem** · 🎮 **Jogos de console no PC** (Bloodborne e God of War III) · 🤖 **Assistente IA** · ⭐ **Avaliações** · 🎨 **7 temas** ou o seu · 🔔 avisos por cima do jogo · ⚙️ se atualiza sozinho
+
+<br />
 
 ## 📥 Como instalar
 
-**Windows**
-1. Acesse [**zju4nnhub.com**](https://zju4nnhub.com) e clique em **Baixar pra Windows** (~100 MB)
-2. Execute (clique em **Mais informações** → **Executar mesmo assim** se o Windows SmartScreen perguntar)
-3. Faça login com Discord
-4. Pronto! 🎮
+| 🪟 Windows 10 e 11 | 🐧 Linux |
+| :-- | :-- |
+| 1. Entre em **[zju4nnhub.com](https://zju4nnhub.com)** e clique em **Baixar pra Windows** | 1. Baixe o **[AppImage](https://github.com/zJu4nn-Hub/zju4nnhub/releases/latest/download/zJu4nn-Hub-x86_64.AppImage)** |
+| 2. Abra o instalador (se o Windows perguntar: **Mais informações** → **Executar mesmo assim**) | 2. Clique com o botão direito → **Propriedades** → marque **Permitir executar como programa** |
+| 3. Entre com o Discord e pronto 🎮 | 3. Abra, entre com o Discord e pronto 🎮 |
 
-**Linux**
-1. Baixe o **AppImage** em [**zju4nnhub.com**](https://zju4nnhub.com) ou nas [releases](https://github.com/zJu4nn-Hub/zju4nnhub/releases/latest)
-2. Dê permissão de execução (`chmod +x zJu4nn-Hub-x86_64.AppImage`) e abra
-3. Faça login com Discord
-
----
+<br />
 
 ## 🛡️ É seguro?
 
-O aviso do Windows ou de algum antivírus aparece porque o instalador ainda não tem a **assinatura digital paga**, e alguns antivírus e sites de análise marcam qualquer programa sem ela. Baixe **só pelo site oficial ou pelas [releases deste repositório](https://github.com/zJu4nn-Hub/zju4nnhub/releases)**. Quer conferir antes? Mande o instalador pro [VirusTotal](https://www.virustotal.com/).
+**Sim.** A versão 0.2.83 passou pelos **67 antivírus do [VirusTotal](https://www.virustotal.com/gui/file/5b1a5673c9718c9e35433a4ff400280cc15657b7a921a0caf01a26a720dd9805) e nenhum achou problema.**
 
----
+Se o Windows mostrar uma tela azul de aviso, é só porque o instalador ainda não tem a assinatura digital paga. Baixe sempre pelo **[site oficial](https://zju4nnhub.com)** ou pelas **[versões aqui do GitHub](https://github.com/zJu4nn-Hub/zju4nnhub/releases)**.
+
+<br />
 
 ## 👑 Premium
 
-R$ 9,90/mês ou R$ 99,90/ano (fora do Brasil: dólar ou euro pela Hotmart). Inclui:
+O Hub é grátis pra sempre. O Premium é pra quem quer ir além — e ajuda a manter o projeto vivo.
 
-- ☁ Saves na nuvem automáticos, até 100 MB por jogo
-- 🔄 Biblioteca em qualquer PC
-- 🤖 Assistente IA e Recomendador sem limite
-- 🖼️ Todos os fundos animados do perfil
-- 👑 Selo dourado no perfil + contorno no avatar
-- 💎 Canal exclusivo no Discord e suporte prioritário
+☁️ Saves na nuvem automáticos · 🔄 Biblioteca em qualquer PC · 🤖 Assistente IA · 🖼️ Todos os fundos do perfil · 👑 Selo dourado · 💎 Canal exclusivo no Discord
 
-[**Ver Premium →**](https://zju4nnhub.com/premium)
+**R$ 9,90/mês** ou **R$ 99,90/ano** — fora do Brasil, em dólar ou euro. **[Conhecer o Premium →](https://zju4nnhub.com/premium)**
 
----
+<br />
 
-## 💬 Suporte
+<details>
+<summary><b>🇺🇸 In English</b></summary>
+<br />
 
-Qualquer dúvida ou problema, fala com a galera no [**Discord oficial**](https://discord.gg/qpXt7eDkkf). Bug? Reporta lá no canal `#🐛┃bugs`.
+**zJu4nn Hub** is a free PC game launcher for **Windows and Linux**, made in Brazil. Browse a catalog of **2,900+ games** and install them in one click, track your **achievements and playtime**, see which **friends are online**, and keep your **saves in the cloud** (Premium). Log in with **Discord** — no new password. The app speaks English, Spanish and Portuguese.
 
----
+**[Download at zju4nnhub.com/en →](https://zju4nnhub.com/en)**
+</details>
 
-## 📄 Licença
+<details>
+<summary><b>🇪🇸 En español</b></summary>
+<br />
 
-[MIT](LICENSE) — use, modifique, contribua. Veja o arquivo LICENSE pra detalhes.
+**zJu4nn Hub** es un launcher gratis de juegos de PC para **Windows y Linux**, hecho en Brasil. Explora un catálogo con **más de 2900 juegos** y los instalas con un clic, sigue tus **logros y tiempo de juego**, mira qué **amigos están en línea** y guarda tus **partidas en la nube** (Premium). Entras con **Discord**, sin contraseña nueva. La app habla español, inglés y portugués.
 
----
+**[Descárgalo en zju4nnhub.com/es →](https://zju4nnhub.com/es)**
+</details>
+
+<br />
 
 <div align="center">
 
-Feito com 💜 no Brasil pros fãs do canal.
+### 💬 Bora jogar junto?
 
-[**zju4nnhub.com**](https://zju4nnhub.com)
+Dúvida, bug ou ideia? A galera tá no Discord.
+
+<a href="https://discord.gg/qpXt7eDkkf"><img src="https://img.shields.io/badge/Entrar_no_Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white" alt="Entrar no Discord" height="36" /></a>
+
+<br /><br />
+
+<sub>Feito com 💜 no Brasil · <a href="https://zju4nnhub.com">zju4nnhub.com</a> · © 2026 zJu4nn</sub>
 
 </div>
