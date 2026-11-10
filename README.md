@@ -78,7 +78,7 @@ Você entra com o seu **Discord**, sem criar senha nova. O app é **100% grátis
 
 ## 📥 Como instalar
 
-| 🪟 Windows 10 e 11 | 🐧 Linux |
+| 💻 Windows 10 e 11 | 🐧 Linux |
 | :-- | :-- |
 | 1. Entre em **[zju4nnhub.com](https://zju4nnhub.com)** e clique em **Baixar pra Windows** | 1. Baixe o **[AppImage](https://github.com/zJu4nn-Hub/zju4nnhub/releases/latest/download/zJu4nn-Hub-x86_64.AppImage)** |
 | 2. Abra o instalador (se o Windows perguntar: **Mais informações** → **Executar mesmo assim**) | 2. Clique com o botão direito → **Propriedades** → marque **Permitir executar como programa** |
